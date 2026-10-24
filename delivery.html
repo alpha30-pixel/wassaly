@@ -192,7 +192,8 @@ const ROLE_NAME = { admin: "مدير", accountant: "محاسب", ops: "عملي�
 const GOVS = ["القاهرة","الجيزة","الإسكندرية","القليوبية","الشرقية","الدقهلية","الغربية","المنوفية","البحيرة","كفر الشيخ","دمياط","بورسعيد","الإسماعيلية","السويس","الفيوم","بني سويف","المنيا","أسيوط","سوهاج","قنا","الأقصر","أسوان","البحر الأحمر","مطروح","الوادي الجديد","شمال سيناء","جنوب سيناء"];
 const FAIL_REASONS = ["العميل مبيردش", "العميل طلب تأجيل", "العنوان غلط", "العميل رفض الاستلام", "التليفون مقفول", "سبب تاني"];
 
-let TOKEN = store.get("ws_token"), ME = null, RATES = [], loading = 0;
+const TKEY = "ws_token_" + APP_MODE;
+let TOKEN = store.get(TKEY), ME = null, RATES = [], loading = 0;
 function busy(on) { loading += on ? 1 : -1; let b = $("#ld"); if (loading > 0 && !b) document.body.insertAdjacentHTML("beforeend", '<div class="load" id="ld"></div>'); if (loading <= 0 && b) b.remove(); }
 function toast(msg, bad) { $$(".toast").forEach(t => t.remove()); document.body.insertAdjacentHTML("beforeend", `<div class="toast ${bad ? "bad" : ""}">${esc(msg)}</div>`); setTimeout(() => $$(".toast").forEach(t => t.remove()), 3200); }
 
@@ -238,11 +239,12 @@ const PAGES = [
   { id: "settings", t: "الموظفين والمناديب", i: "gear", r: ["admin", "accountant", "ops"] }
 ];
 const MODE_PAGES = { admin: ["dash", "ships", "new", "wh", "dispatch", "merchants", "acc", "reports", "settings"], delivery: ["courier"] };
-const myPages = () => PAGES.filter(p => p.r.includes(ME.role) && MODE_PAGES[APP_MODE].includes(p.id));
+const MODE_ROLES = { admin: ["admin", "accountant", "ops"], delivery: ["courier"] };
+const myPages = () => MODE_ROLES[APP_MODE].includes(ME.role) ? PAGES.filter(p => p.r.includes(ME.role) && MODE_PAGES[APP_MODE].includes(p.id)) : [];
 
 function shell() {
-  if (!myPages().filter(p => p.id !== "settings").length) {
-    showLogin(); TOKEN = null; store.set("ws_token", null);
+  if (!myPages().length) {
+    showLogin(); TOKEN = null; store.set(TKEY, null);
     $("#loginErr").innerHTML = APP_MODE === "admin" ? 'الحساب ده حساب مندوب — ادخل من <a href="delivery.html" style="color:var(--or)">صفحة الدليفري</a>' : 'الحساب ده مش حساب مندوب — ادخل من <a href="admin.html" style="color:var(--or)">صفحة الإدارة</a>';
     return;
   }
@@ -265,14 +267,14 @@ function go(id) {
   VIEWS[id]().catch(e => { $("#main").innerHTML = `<div class="empty">${esc(e.message)}</div>`; });
   scrollTo(0, 0);
 }
-function logout(silent) { if (!silent) api("logout").catch(() => {}); TOKEN = null; store.set("ws_token", null); ME = null; showLogin(); }
+function logout(silent) { if (!silent) api("logout").catch(() => {}); TOKEN = null; store.set(TKEY, null); ME = null; showLogin(); }
 function showLogin() { $("#appView").hidden = true; $("#mnav").hidden = true; $("#loginView").hidden = false; }
 
 $("#loginForm").onsubmit = async e => {
   e.preventDefault(); const f = e.target; $("#loginErr").textContent = "";
   try {
     const r = await api("login", { username: f.username.value, password: f.password.value });
-    TOKEN = r.token; ME = r.user; store.set("ws_token", TOKEN); f.reset(); await boot2();
+    TOKEN = r.token; ME = r.user; store.set(TKEY, TOKEN); f.reset(); await boot2();
   } catch (err) { $("#loginErr").textContent = err.message; }
 };
 
