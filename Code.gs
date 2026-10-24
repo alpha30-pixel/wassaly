@@ -74,7 +74,7 @@ function setup() {
 /* ===================== نقطة الدخول ===================== */
 function doGet(e) {
   var p = (e && e.parameter) || {};
-  if (p.action === 'track') return json_(handle_({ action: 'track', code: p.code }));
+  if (p.action === 'track') return json_(handle_({ action: 'track', code: p.code || p.q }));
   return json_({ ok: true, app: 'wassaly', time: now_() });
 }
 
@@ -87,7 +87,7 @@ function doPost(e) {
 function handle_(b) {
   try {
     var a = b.action;
-    if (a === 'track') return ok_(track_(b.code));
+    if (a === 'track') return ok_(trackAny_(b.code || b.q));
     if (a === 'login') return ok_(login_(b.username, b.password));
     if (a === 'rates') return ok_(rows_('Rates'));
     var u = auth_(b.token);
@@ -150,7 +150,11 @@ var API = {
       if (f.governorate && s.governorate !== f.governorate) return false;
       if (f.from && day_(s.created) < f.from) return false;
       if (f.to && day_(s.created) > f.to) return false;
-      if (q && [s.code, s.receiverName, s.receiverPhone, s.merchantName, s.city].join(' ').toLowerCase().indexOf(q) < 0) return false;
+      if (q) {
+        var qd = phoneKey_(q), hay = [s.code, s.receiverName, s.receiverPhone, s.merchantName, s.city, s.senderPhone].join(' ').toLowerCase();
+        var phoneHit = qd.length >= 6 && (phoneKey_(s.receiverPhone).indexOf(qd) >= 0 || phoneKey_(s.senderPhone).indexOf(qd) >= 0);
+        if (hay.indexOf(q) < 0 && !phoneHit) return false;
+      }
       return true;
     });
     list.reverse();
@@ -372,6 +376,24 @@ var API = {
 };
 
 /* ===================== منطق داخلي ===================== */
+/* تتبّع بالكود أو برقم الموبايل */
+function trackAny_(q) {
+  q = String(q || '').trim();
+  if (!q) throw new Error('اكتب رقم موبايلك أو كود الشحنة');
+  if (/^ws/i.test(q)) return { items: [track_(q)] };
+  var key = phoneKey_(q);
+  if (key.length < 9) throw new Error('اكتب رقم الموبايل كامل');
+  var list = rows_('Shipments').filter(function (s) { return phoneKey_(s.receiverPhone) === key; }).reverse().slice(0, 20);
+  if (!list.length) throw new Error('مفيش شحنات على الرقم ده');
+  return { items: list.map(function (s) { return track_(s.code); }) };
+}
+function phoneKey_(p) {
+  var d = String(p || '').replace(/[٠-٩]/g, function (c) { return '٠١٢٣٤٥٦٧٨٩'.indexOf(c); }).replace(/\D/g, '');
+  if (d.indexOf('0020') === 0) d = d.slice(4); else if (d.indexOf('20') === 0 && d.length >= 12) d = d.slice(2);
+  if (d.charAt(0) === '0') d = d.slice(1);
+  return d;
+}
+
 function track_(code) {
   code = norm_(code);
   if (!code) throw new Error('اكتب كود الشحنة');
@@ -472,12 +494,15 @@ function rows_(name) {
   }
   return out;
 }
-function append_(name, obj) { sheet_(name).appendRow(SHEETS[name].map(function (k) { return obj[k] === undefined ? '' : obj[k]; })); }
+var TEXT_COLS = ['receiverPhone', 'senderPhone', 'phone', 'username'];
+function cell_(k, v) { return TEXT_COLS.indexOf(k) >= 0 && v !== '' && v != null ? "'" + String(v) : v; }
+function append_(name, obj) { sheet_(name).appendRow(SHEETS[name].map(function (k) { return obj[k] === undefined ? '' : cell_(k, obj[k]); })); }
 function update_(name, key, val, patch) {
   var sh = sheet_(name), v = sh.getDataRange().getValues(), H = v[0], ki = H.indexOf(key);
   for (var i = 1; i < v.length; i++) {
     if (String(v[i][ki]) === String(val)) {
       Object.keys(patch).forEach(function (k) { var c = H.indexOf(k); if (c >= 0) v[i][c] = patch[k]; });
+      TEXT_COLS.forEach(function (k) { var c = H.indexOf(k); if (c >= 0 && v[i][c] !== '' && String(v[i][c]).charAt(0) !== "'") v[i][c] = "'" + String(v[i][c]); });
       sh.getRange(i + 1, 1, 1, H.length).setValues([v[i]]);
       return true;
     }

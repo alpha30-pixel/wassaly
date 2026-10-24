@@ -18,7 +18,7 @@ a{color:inherit}
 h1{font:800 clamp(28px,6vw,40px)/1.2 var(--h);margin:40px 0 8px}h1 em{font-style:normal;color:var(--or)}
 .sub{color:var(--mut);margin-bottom:22px}
 form{display:flex;gap:10px;background:var(--n2);border:1px solid var(--line);border-radius:18px;padding:8px}
-input{flex:1;min-width:0;background:transparent;border:0;outline:none;font:700 20px var(--m);letter-spacing:2px;color:var(--cream);padding:10px 12px;direction:ltr;text-align:center}
+input{flex:1;min-width:0;background:transparent;border:0;outline:none;font:700 22px var(--m);letter-spacing:2px;color:var(--cream);padding:10px 12px;direction:ltr;text-align:center}
 button{border:0;border-radius:12px;background:var(--or);color:#fff;font:600 15px var(--b);padding:0 24px;cursor:pointer}
 button:disabled{opacity:.6}
 .res{margin-top:24px}
@@ -49,8 +49,8 @@ button:disabled{opacity:.6}
 <div class="w">
   <a class="logo" href="index.html"><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-7 4 5 3-4 4 4"/></svg></i>وصّلي<em>.</em></a>
   <h1>تتبّع <em>شحنتك</em></h1>
-  <p class="sub">اكتب رقم الشحنة اللي على البوليصة أو اللي وصلك في الرسالة.</p>
-  <form id="f"><input id="c" placeholder="WS2610241234" autocomplete="off" required><button id="b">تتبّع</button></form>
+  <p class="sub">اكتب رقم موبايلك اللي الشحنة جاية عليه، وهتشوف كل شحناتك وحالتها.</p>
+  <form id="f"><input id="c" type="tel" inputmode="tel" placeholder="01xxxxxxxxx" autocomplete="tel" required><button id="b">تتبّع</button></form>
   <div class="res" id="r"></div>
   <p class="help">محتاج مساعدة؟ <a id="wa" target="_blank" rel="noopener">كلّمنا على واتساب</a></p>
 </div>
@@ -64,25 +64,30 @@ const dt = s => { const d = new Date(s); return isNaN(d) ? s : d.toLocaleString(
 document.getElementById("wa").href = "https://wa.me/" + WHATSAPP;
 const STEP = { new: 1, picked: 1, inbound: 2, outbound: 3, failed: 3, delivered: 4, returning: 3, returned: 4, cancelled: 1 };
 
-async function track(code) {
+function card(s) {
+  const n = STEP[s.status] || 1, bad = ["failed","returning","returned","cancelled"].includes(s.status);
+  return `<div class="card"><div class="hd"><span class="code">${esc(s.code)}</span><span class="meta">${esc(s.governorate)}${s.city ? " — " + esc(s.city) : ""}</span></div>
+    <div class="st ${esc(s.status)}">${esc(s.label)}</div><div class="meta">${s.merchant ? "من: " + esc(s.merchant) + " · " : ""}آخر تحديث: ${dt(s.updated || s.created)}</div>
+    <div class="prog ${bad ? "bad" : ""}">${[1,2,3,4].map(i => `<div class="${i <= n ? "on" : ""}"></div>`).join("")}</div>
+    <div class="lbl"><span>اتسجّلت</span><span>في المخزن</span><span>مع المندوب</span><span>${s.status === "returned" ? "مرتجع" : "اتسلّمت"}</span></div>
+    <details ${document.querySelectorAll(".card").length ? "" : "open"}><summary style="cursor:pointer;color:#e0590a;font-weight:600;margin-bottom:8px">تفاصيل الرحلة</summary>
+    <div class="tl">${s.history.slice().reverse().map(h => `<div><b>${esc(h.label)}</b>${h.note ? `<span>${esc(h.note)}</span><br>` : ""}<span>${dt(h.ts)}</span></div>`).join("")}</div></details>
+    ${s.cod > 0 && s.status !== "delivered" ? `<div class="cod"><span>المطلوب دفعه عند الاستلام</span><b>${Number(s.cod).toLocaleString("en-US")} ج</b></div>` : ""}</div>`;
+}
+async function track(q) {
   const r = document.getElementById("r"), b = document.getElementById("b");
   b.disabled = true; r.innerHTML = "";
   try {
-    const res = await fetch(API_URL + "?action=track&code=" + encodeURIComponent(code)).then(x => x.json());
+    if (!API_URL) throw new Error("السيستم لسه مش متوصل");
+    const res = await fetch(API_URL + "?action=track&q=" + encodeURIComponent(q)).then(x => x.json());
     if (!res.ok) throw new Error(res.error);
-    const s = res.data, n = STEP[s.status] || 1, bad = ["failed","returning","returned","cancelled"].includes(s.status);
-    r.innerHTML = `<div class="card"><div class="hd"><span class="code">${esc(s.code)}</span><span class="meta">${esc(s.governorate)}${s.city ? " — " + esc(s.city) : ""}</span></div>
-      <div class="st ${esc(s.status)}">${esc(s.label)}</div><div class="meta">آخر تحديث: ${dt(s.updated)}${s.receiver ? " · المستلم: " + esc(s.receiver) : ""}</div>
-      <div class="prog ${bad ? "bad" : ""}">${[1,2,3,4].map(i => `<div class="${i <= n ? "on" : ""}"></div>`).join("")}</div>
-      <div class="lbl"><span>اتسجّلت</span><span>في المخزن</span><span>مع المندوب</span><span>${s.status === "returned" ? "مرتجع" : "اتسلّمت"}</span></div>
-      <div class="tl">${s.history.slice().reverse().map(h => `<div><b>${esc(h.label)}</b>${h.note ? `<span>${esc(h.note)}</span><br>` : ""}<span>${dt(h.ts)}</span></div>`).join("")}</div>
-      ${s.cod > 0 && s.status !== "delivered" ? `<div class="cod"><span>المطلوب دفعه عند الاستلام</span><b>${Number(s.cod).toLocaleString("en-US")} ج</b></div>` : ""}</div>`;
-    history.replaceState(null, "", "#" + s.code);
+    const items = res.data.items;
+    r.innerHTML = (items.length > 1 ? `<p class="sub" style="margin:0 0 12px">لقينا ${items.length} شحنات على رقمك</p>` : "") + items.map(card).join('<div style="height:14px"></div>');
   } catch (e) { r.innerHTML = `<div class="err">${esc(e.message === "Failed to fetch" ? "مش قادرين نوصل للسيرفر، جرّب تاني" : e.message)}</div>`; }
   b.disabled = false;
 }
-document.getElementById("f").addEventListener("submit", e => { e.preventDefault(); track(document.getElementById("c").value.trim().toUpperCase()); });
-const h = location.hash.slice(1); if (/^WS\d+$/i.test(h)) { document.getElementById("c").value = h.toUpperCase(); track(h.toUpperCase()); }
+document.getElementById("f").addEventListener("submit", e => { e.preventDefault(); track(document.getElementById("c").value.trim()); });
+const h = decodeURIComponent(location.hash.slice(1)); if (h) { document.getElementById("c").value = h; track(h); }
 </script>
 </body>
 </html>

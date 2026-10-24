@@ -235,9 +235,9 @@ const PAGES = [
   { id: "merchants", t: "التجار", i: "store", r: ["admin", "accountant", "ops"] },
   { id: "acc", t: "المحاسبة", i: "cash", r: ["admin", "accountant"] },
   { id: "reports", t: "التقارير", i: "chart", r: ["admin", "accountant", "ops"] },
-  { id: "settings", t: "الإعدادات", i: "gear", r: ["admin", "accountant", "ops", "courier"] }
+  { id: "settings", t: "الموظفين والمناديب", i: "gear", r: ["admin", "accountant", "ops"] }
 ];
-const MODE_PAGES = { admin: ["dash", "ships", "new", "wh", "dispatch", "merchants", "acc", "reports", "settings"], delivery: ["courier", "settings"] };
+const MODE_PAGES = { admin: ["dash", "ships", "new", "wh", "dispatch", "merchants", "acc", "reports", "settings"], delivery: ["courier"] };
 const myPages = () => PAGES.filter(p => p.r.includes(ME.role) && MODE_PAGES[APP_MODE].includes(p.id));
 
 function shell() {
@@ -250,6 +250,7 @@ function shell() {
   const links = myPages().map(p => `<a data-p="${p.id}">${svg(p.i)}<span>${p.t}</span></a>`).join("");
   $("#side").innerHTML = `<div class="brand"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-7 4 5 3-4 4 4"/></svg></i>وصّلي<em>.</em></div>${links}
     <div class="me"><b>${esc(ME.name)}</b><span class="muted">${ROLE_NAME[ME.role]}</span><br><a style="padding:8px 0 0;display:inline-flex" id="logoutBtn">${svg("out")} خروج</a></div>`;
+  $("#mnav").hidden = myPages().length < 2;
   $("#mnav").innerHTML = myPages().map(p => `<a data-p="${p.id}">${svg(p.i)}<span>${p.t.split(" ")[0]}</span></a>`).join("");
   $$("[data-p]").forEach(a => a.onclick = () => go(a.dataset.p));
   $("#logoutBtn").onclick = () => logout();
@@ -315,7 +316,7 @@ VIEWS.ships = async (filter = {}) => {
   const canEdit = ["admin", "ops"].includes(ME.role);
   $("#main").innerHTML = head("الشحنات", canEdit ? `<button class="btn or" onclick="go('new')">+ شحنة جديدة</button>` : "") + `
   <div class="card" style="margin-bottom:14px"><form class="row" id="sf">
-    <input class="in" name="q" placeholder="بحث بالكود أو الاسم أو التليفون" style="flex:2;min-width:200px" value="${esc(filter.q || "")}">
+    <input class="in" name="q" placeholder="🔍 دوّر برقم التليفون أو الاسم أو الكود" style="flex:2;min-width:200px" value="${esc(filter.q || "")}">
     <select class="in" name="status" style="flex:1;min-width:140px"><option value="">كل الحالات</option>${Object.entries(ST).map(([k, v]) => `<option value="${k}" ${filter.status === k ? "selected" : ""}>${v}</option>`).join("")}</select>
     <select class="in" name="governorate" style="flex:1;min-width:140px"><option value="">كل المحافظات</option>${GOVS.map(g => `<option ${filter.governorate === g ? "selected" : ""}>${g}</option>`).join("")}</select>
     <input class="in" type="date" name="from" style="flex:1;min-width:140px" value="${esc(filter.from || "")}">
@@ -465,9 +466,10 @@ VIEWS.dispatch = async () => {
 VIEWS.courier = async () => {
   const list = await api("myShipments");
   const total = list.filter(s => s.status === "outbound").reduce((t, s) => t + Number(s.cod || 0), 0);
-  $("#main").innerHTML = head("شحناتي", `<button class="btn gh" onclick="go('courier')">تحديث</button>`) + `
-  <div class="kpis"><div class="kpi o"><span>معايا</span><b>${list.length}</b></div><div class="kpi"><span>المفروض أحصّل (ج)</span><b>${money(total)}</b></div></div>
-  <div class="grid">${list.length ? list.map(s => `<div class="job">
+  $("#main").innerHTML = head(`أهلاً ${esc(ME.name.split(" ")[0])} 👋`, `<button class="btn gh sm" onclick="go('courier')">تحديث</button><button class="btn gh sm" onclick="logout()">خروج</button>`) + `
+  <div class="kpis"><div class="kpi o"><span>شحنات معايا</span><b>${list.length}</b></div><div class="kpi"><span>المفروض أحصّل (ج)</span><b>${money(total)}</b></div></div>
+  <input class="in" id="cq" type="search" placeholder="🔍 دوّر برقم تليفون العميل أو اسمه" style="margin-bottom:12px;font-size:16px">
+  <div class="grid" id="jobs">${list.length ? list.map(s => `<div class="job" data-k="${esc((s.receiverPhone + " " + s.receiverName + " " + s.code + " " + s.city).toLowerCase())}">
     <div class="h"><span class="mono" style="color:var(--or)">${esc(s.code)}</span>${pill(s.status)}</div>
     <div><b style="font-size:17px">${esc(s.receiverName)}</b><br><span class="muted">${esc(s.governorate)} - ${esc(s.city)} · ${esc(s.address)}</span></div>
     <div class="h"><span class="cod">${money(s.cod)} ج</span><span class="muted sm-t">${esc(s.content || "")} ${s.notes ? "· " + esc(s.notes) : ""}</span></div>
@@ -477,6 +479,7 @@ VIEWS.courier = async () => {
       <button class="btn gr sm" data-d="${esc(s.code)}" data-c="${esc(s.cod)}">✓ اتسلّمت</button>
       <button class="btn rd sm" data-f="${esc(s.code)}">✕ مااتسلّمتش</button>
     </div></div>`).join("") : '<div class="card empty">مفيش شحنات معاك دلوقتي</div>'}</div>`;
+  $("#cq").oninput = e => { const q = e.target.value.trim().toLowerCase().replace(/^\+?20|^0/, ""); $$("#jobs .job").forEach(j => j.hidden = q && !j.dataset.k.includes(q)); };
   $$("[data-d]").forEach(b => b.onclick = () => {
     const box = modal(`<h2>تأكيد التسليم</h2><p class="muted mono">${esc(b.dataset.d)}</p><label class="f" style="margin-top:12px">المبلغ اللي اتحصّل (ج)<input class="in mono" id="am" type="number" value="${esc(b.dataset.c)}"></label>
       <div class="row" style="margin-top:14px"><button class="btn gr" id="ok">تأكيد</button><button class="btn gh" onclick="closeModal()">إلغاء</button></div>`);
@@ -584,9 +587,9 @@ VIEWS.reports = async (q) => {
 VIEWS.settings = async () => {
   const isAdmin = ME.role === "admin";
   const [users, rates] = isAdmin ? await Promise.all([api("listUsers"), api("rates")]) : [[], []];
-  $("#main").innerHTML = head("الإعدادات") + `
+  $("#main").innerHTML = head("الموظفين والمناديب") + `
   <div class="cols2">
-    ${isAdmin ? `<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h3>الموظفين</h3><button class="btn or sm" id="au">+ موظف</button></div>
+    ${isAdmin ? `<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h3>الموظفين والمناديب</h3><button class="btn or sm" id="au">+ إضافة مندوب / موظف</button></div>
       <table style="min-width:0"><thead><tr><th>الاسم</th><th>المستخدم</th><th>الدور</th><th>الحالة</th><th></th></tr></thead><tbody>
       ${users.map((u, i) => `<tr><td>${esc(u.name)}</td><td class="mono">${esc(u.username)}</td><td>${ROLE_NAME[u.role]}</td><td>${u.active ? '<span class="pill s-delivered">شغّال</span>' : '<span class="pill s-cancelled">موقوف</span>'}</td><td><button class="btn gh sm" data-u="${i}">تعديل</button></td></tr>`).join("")}</tbody></table></div>` : ""}
     <div class="card"><h3 style="margin-bottom:10px">تغيير الباسورد بتاعي</h3><form id="pf" class="grid">

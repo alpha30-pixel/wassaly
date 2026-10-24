@@ -312,9 +312,9 @@ h1 .sw.x{opacity:0;transform:translateY(14px)}
 </div></div></div>
 
 <!-- تتبّع سريع -->
-<section class="w" style="margin-top:40px"><form class="trk rv" id="trk" onsubmit="event.preventDefault();location.href='track.html#'+this.c.value.trim().toUpperCase()">
+<section class="w" style="margin-top:40px"><form class="trk rv" id="trk" onsubmit="event.preventDefault();location.href='track.html#'+encodeURIComponent(this.c.value.trim())">
   <div><span class="k">TRACK</span><b style="font:800 22px var(--h)">تابع شحنتك دلوقتي</b></div>
-  <input name="c" placeholder="اكتب كود الشحنة WS…" required autocomplete="off"><button class="btn or">تتبّع</button></form></section>
+  <input name="c" type="tel" placeholder="اكتب رقم موبايلك 01xxxxxxxxx" required autocomplete="tel"><button class="btn or">تتبّع</button></form></section>
 
 <!-- رحلة الشحنة: العربية بتمشي مع السكرول -->
 <section class="blk" id="trip">
