@@ -6,10 +6,11 @@
 <title>وصّلي | سيستم الموظفين</title>
 <meta name="theme-color" content="#08142f">
 <meta name="robots" content="noindex">
+<link rel="preconnect" href="https://script.google.com"><link rel="preconnect" href="https://script.googleusercontent.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
 <style>
 :root{--ink:#050d22;--navy:#08142f;--n2:#0f1f45;--n3:#162a5c;--cream:#f4efe6;--muted:#8f9bbd;--line:rgba(244,239,230,.1);
 --or:#ff6a13;--gr:#19c37d;--red:#ff4b4b;--yl:#f5b52e;--bl:#4c8dff;
@@ -197,8 +198,15 @@ let TOKEN = store.get(TKEY), ME = null, RATES = [], loading = 0;
 function busy(on) { loading += on ? 1 : -1; let b = $("#ld"); if (loading > 0 && !b) document.body.insertAdjacentHTML("beforeend", '<div class="load" id="ld"></div>'); if (loading <= 0 && b) b.remove(); }
 function toast(msg, bad) { $$(".toast").forEach(t => t.remove()); document.body.insertAdjacentHTML("beforeend", `<div class="toast ${bad ? "bad" : ""}">${esc(msg)}</div>`); setTimeout(() => $$(".toast").forEach(t => t.remove()), 3200); }
 
-async function api(action, payload = {}) {
-  if (!API_URL) throw new Error("لازم تحط لينك الـ API في ملف config.js الأول");
+/* كاش سريع: بيعرض آخر بيانات محفوظة فورًا وبيحدّثها في الخلفية */
+const READS = ["dashboard", "listShipments", "listMerchants", "listUsers", "accounting", "report", "myShipments", "rates"];
+const LIVE_VIEWS = ["dash", "ships", "merchants", "acc", "reports", "courier", "settings"];
+const mem = {}; let FRESH = false, CUR = null, CUR_ARGS = [];
+const ck = (a, p) => "c_" + APP_MODE + "_" + (ME ? ME.id : "") + "_" + a + "_" + JSON.stringify(p);
+function cget(k) { if (mem[k]) return mem[k]; try { const v = sessionStorage.getItem(k); return v ? (mem[k] = v) : null; } catch (e) { return null; } }
+function cset(k, v) { mem[k] = v; try { sessionStorage.setItem(k, v); } catch (e) {} }
+function cclear() { for (const k in mem) delete mem[k]; try { Object.keys(sessionStorage).filter(k => k.startsWith("c_")).forEach(k => sessionStorage.removeItem(k)); } catch (e) {} }
+async function call(action, payload) {
   busy(true);
   try {
     const r = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action, token: TOKEN, ...payload }) });
@@ -206,6 +214,17 @@ async function api(action, payload = {}) {
     if (!j.ok) { if (/الجلسة|سجّل دخول/.test(j.error)) logout(true); throw new Error(j.error); }
     return j.data;
   } finally { busy(false); }
+}
+async function api(action, payload = {}) {
+  if (!API_URL) throw new Error("لازم تحط لينك الـ API في ملف config.js الأول");
+  if (!READS.includes(action)) { const d = await call(action, payload); if (!["login", "me", "getShipment"].includes(action)) cclear(); return d; }
+  const k = ck(action, payload), hit = cget(k);
+  if (hit && !FRESH) {
+    const view = CUR;
+    call(action, payload).then(d => { const s = JSON.stringify(d); if (s !== hit) { cset(k, s); if (view && view === CUR && !$("#ov") && LIVE_VIEWS.includes(view) && !(document.activeElement && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName))) { FRESH = true; VIEWS[view](...CUR_ARGS).catch(() => {}).finally(() => FRESH = false); } } }).catch(() => {});
+    return JSON.parse(hit);
+  }
+  const d = await call(action, payload); cset(k, JSON.stringify(d)); return d;
 }
 async function run(fn, okMsg) { try { const r = await fn(); if (okMsg) toast(okMsg); return r; } catch (e) { toast(e.message, true); throw e; } }
 
@@ -244,7 +263,7 @@ const myPages = () => MODE_ROLES[APP_MODE].includes(ME.role) ? PAGES.filter(p =>
 
 function shell() {
   if (!myPages().length) {
-    showLogin(); TOKEN = null; store.set(TKEY, null);
+    showLogin(); TOKEN = null; store.set(TKEY, null); store.set(MEKEY, null);
     $("#loginErr").innerHTML = APP_MODE === "admin" ? 'الحساب ده حساب مندوب — ادخل من <a href="delivery.html" style="color:var(--or)">صفحة الدليفري</a>' : 'الحساب ده مش حساب مندوب — ادخل من <a href="admin.html" style="color:var(--or)">صفحة الإدارة</a>';
     return;
   }
@@ -264,17 +283,18 @@ function go(id) {
   try { history.replaceState(null, "", "#" + id); } catch (e) {}
   $$("[data-p]").forEach(a => a.classList.toggle("on", a.dataset.p === id));
   $("#main").innerHTML = '<div class="empty">جاري التحميل…</div>';
+  CUR = id; CUR_ARGS = [];
   VIEWS[id]().catch(e => { $("#main").innerHTML = `<div class="empty">${esc(e.message)}</div>`; });
   scrollTo(0, 0);
 }
-function logout(silent) { if (!silent) api("logout").catch(() => {}); TOKEN = null; store.set(TKEY, null); ME = null; showLogin(); }
+function logout(silent) { if (!silent) call("logout", {}).catch(() => {}); TOKEN = null; store.set(TKEY, null); store.set(MEKEY, null); cclear(); ME = null; showLogin(); }
 function showLogin() { $("#appView").hidden = true; $("#mnav").hidden = true; $("#loginView").hidden = false; }
 
 $("#loginForm").onsubmit = async e => {
   e.preventDefault(); const f = e.target; $("#loginErr").textContent = "";
   try {
     const r = await api("login", { username: f.username.value, password: f.password.value });
-    TOKEN = r.token; ME = r.user; store.set(TKEY, TOKEN); f.reset(); await boot2();
+    TOKEN = r.token; store.set(TKEY, TOKEN); f.reset(); cclear(); boot2(r.user);
   } catch (err) { $("#loginErr").textContent = err.message; }
 };
 
@@ -315,6 +335,7 @@ VIEWS.dash = async () => {
 };
 
 VIEWS.ships = async (filter = {}) => {
+  CUR = "ships"; CUR_ARGS = [filter];
   const canEdit = ["admin", "ops"].includes(ME.role);
   $("#main").innerHTML = head("الشحنات", canEdit ? `<button class="btn or" onclick="go('new')">+ شحنة جديدة</button>` : "") + `
   <div class="card" style="margin-bottom:14px"><form class="row" id="sf">
@@ -384,7 +405,7 @@ function editShip(s) {
 }
 
 VIEWS.new = async () => {
-  const [ms, rates] = await Promise.all([api("listMerchants"), api("rates")]); RATES = rates;
+  const [ms, rates] = await Promise.all([api("listMerchants"), RATES.length ? RATES : api("rates")]); RATES = rates;
   $("#main").innerHTML = head("شحنة جديدة") + `<form class="card f3" id="nf">
     <label class="f span2">التاجر<select class="in" name="merchantId"><option value="">— من غير تاجر (عميل فردي) —</option>${ms.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("")}</select></label>
     <label class="f">&nbsp;<button type="button" class="btn gh" id="addM">+ تاجر جديد</button></label>
@@ -558,6 +579,7 @@ VIEWS.acc = async () => {
 };
 
 VIEWS.reports = async (q) => {
+  CUR = "reports"; CUR_ARGS = [q];
   q = q || { from: new Date(Date.now() - 29 * 864e5).toISOString().slice(0, 10), to: today() };
   const r = await api("report", q);
   const maxG = Math.max(1, ...Object.values(r.byGov));
@@ -643,10 +665,14 @@ function printLabels(list) {
 /* ============ تشغيل ============ */
 $("#loginSub").textContent = APP_MODE === "delivery" ? "صفحة المناديب — سجّل دخولك" : "الإدارة والمحاسبة — سجّل دخولك";
 document.title = APP_MODE === "delivery" ? "وصّلي | الدليفري" : "وصّلي | الإدارة والمحاسبة";
-async function boot2() { RATES = await api("rates").catch(() => []); shell(); }
+const MEKEY = "ws_me_" + APP_MODE;
+function boot2(user) { ME = user; RATES = user.rates || []; store.set(MEKEY, JSON.stringify(user)); shell(); }
 (async () => {
   if (!TOKEN) return showLogin();
-  try { ME = await api("me"); await boot2(); } catch (e) { showLogin(); }
+  let cached = null; try { cached = JSON.parse(store.get(MEKEY) || "null"); } catch (e) {}
+  if (cached) { ME = cached; RATES = cached.rates || []; shell(); }
+  try { const u = await call("me", {}); if (!cached) boot2(u); else { store.set(MEKEY, JSON.stringify(u)); RATES = u.rates || RATES; } }
+  catch (e) { if (!TOKEN) return; if (!cached) showLogin(); }
 })();
 </script>
 </body>

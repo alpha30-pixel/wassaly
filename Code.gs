@@ -109,7 +109,7 @@ var WRITE_ACTIONS = ['createShipment', 'updateShipment', 'setStatus', 'scan', 'a
 
 /* ===================== الأوامر ===================== */
 var API = {
-  me: function (u) { return pub_(u); },
+  me: function (u) { var p = pub_(u); p.rates = rows_('Rates'); return p; },
   logout: function (u, b) { CacheService.getScriptCache().remove('t_' + b.token); return true; },
   changePassword: function (u, b) {
     var users = rows_('Users'), me = find_(users, 'id', u.id);
@@ -307,6 +307,7 @@ var API = {
     var sh = sheet_('Rates'); sh.getRange(2, 1, Math.max(sh.getLastRow() - 1, 1), 3).clearContent();
     var vals = (b.rates || []).map(function (r) { return [r.governorate, num_(r.fee), num_(r.days)]; });
     if (vals.length) sh.getRange(2, 1, vals.length, 3).setValues(vals);
+    dirty_('Rates');
     return true;
   },
 
@@ -344,6 +345,7 @@ var API = {
     if (!d || !d.codes.length) throw new Error('مفيش مستحقات للتاجر ده');
     var sh = sheet_('Shipments'), data = sh.getDataRange().getValues(), H = data[0], ci = H.indexOf('code'), si = H.indexOf('settled');
     for (var i = 1; i < data.length; i++) if (d.codes.indexOf(String(data[i][ci])) >= 0) sh.getRange(i + 1, si + 1).setValue(true);
+    dirty_('Shipments');
     append_('Ledger', { id: uid_(), ts: now_(), type: 'payout', amount: d.due, party: d.id, partyName: d.name, ref: d.codes.join(','), note: b.note || 'تسوية تاجر', by: u.name });
     return d;
   },
@@ -453,7 +455,8 @@ function login_(username, password) {
   if (!u || !truthy_(u.active) || hash_(password || '', u.salt) !== u.hash) throw new Error('اسم المستخدم أو الباسورد غلط');
   var token = uid_() + uid_();
   CacheService.getScriptCache().put('t_' + token, u.id, TOKEN_HOURS * 3600);
-  return { token: token, user: pub_(u) };
+  var p = pub_(u); p.rates = rows_('Rates');
+  return { token: token, user: p };
 }
 
 function auth_(token) {
@@ -479,31 +482,44 @@ function newCode_() {
 function log_(code, status, note, by) { append_('History', { ts: now_(), code: code, status: status, note: note || '', by: by || '' }); }
 
 /* ===================== أدوات الشيت ===================== */
-function ss_() { return SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet(); }
+/* كاش داخل الطلب الواحد — بيقلل القراية من الشيت ويسرّع الرد */
+var SS_ = null, SH_ = {}, RAW_ = {}, ROWS_ = {};
+function ss_() { return SS_ || (SS_ = SHEET_ID ? SpreadsheetApp.openById(SHEET_ID) : SpreadsheetApp.getActiveSpreadsheet()); }
 function sheet_(name) {
+  if (SH_[name]) return SH_[name];
   var sh = ss_().getSheetByName(name);
   if (!sh) throw new Error('شغّل setup الأول');
-  return sh;
+  return (SH_[name] = sh);
 }
+function raw_(name) { return RAW_[name] || (RAW_[name] = sheet_(name).getDataRange().getValues()); }
+function dirty_(name) { delete RAW_[name]; delete ROWS_[name]; }
 function rows_(name) {
-  var v = sheet_(name).getDataRange().getValues(), H = v[0], out = [];
-  for (var i = 1; i < v.length; i++) {
-    if (v[i].join('') === '') continue;
-    var o = {}; for (var j = 0; j < H.length; j++) o[H[j]] = v[i][j] instanceof Date ? v[i][j].toISOString() : v[i][j];
-    out.push(o);
+  if (!ROWS_[name]) {
+    var v = raw_(name), H = v[0], out = [];
+    for (var i = 1; i < v.length; i++) {
+      if (v[i].join('') === '') continue;
+      var o = {}; for (var j = 0; j < H.length; j++) o[H[j]] = v[i][j] instanceof Date ? v[i][j].toISOString() : v[i][j];
+      out.push(o);
+    }
+    ROWS_[name] = out;
   }
-  return out;
+  return ROWS_[name].map(function (o) { var c = {}; for (var k in o) c[k] = o[k]; return c; });
 }
 var TEXT_COLS = ['receiverPhone', 'senderPhone', 'phone', 'username'];
 function cell_(k, v) { return TEXT_COLS.indexOf(k) >= 0 && v !== '' && v != null ? "'" + String(v) : v; }
-function append_(name, obj) { sheet_(name).appendRow(SHEETS[name].map(function (k) { return obj[k] === undefined ? '' : cell_(k, obj[k]); })); }
+function append_(name, obj) {
+  sheet_(name).appendRow(SHEETS[name].map(function (k) { return obj[k] === undefined ? '' : cell_(k, obj[k]); }));
+  dirty_(name);
+}
 function update_(name, key, val, patch) {
-  var sh = sheet_(name), v = sh.getDataRange().getValues(), H = v[0], ki = H.indexOf(key);
+  var sh = sheet_(name), v = raw_(name), H = v[0], ki = H.indexOf(key);
   for (var i = 1; i < v.length; i++) {
     if (String(v[i][ki]) === String(val)) {
-      Object.keys(patch).forEach(function (k) { var c = H.indexOf(k); if (c >= 0) v[i][c] = patch[k]; });
-      TEXT_COLS.forEach(function (k) { var c = H.indexOf(k); if (c >= 0 && v[i][c] !== '' && String(v[i][c]).charAt(0) !== "'") v[i][c] = "'" + String(v[i][c]); });
-      sh.getRange(i + 1, 1, 1, H.length).setValues([v[i]]);
+      var row = v[i].slice();
+      Object.keys(patch).forEach(function (k) { var c = H.indexOf(k); if (c >= 0) row[c] = patch[k]; });
+      TEXT_COLS.forEach(function (k) { var c = H.indexOf(k); if (c >= 0 && row[c] !== '' && String(row[c]).charAt(0) !== "'") row[c] = "'" + String(row[c]); });
+      sh.getRange(i + 1, 1, 1, H.length).setValues([row]);
+      dirty_(name);
       return true;
     }
   }
