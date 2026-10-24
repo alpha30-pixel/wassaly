@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وصّلي | تتبّع شحنتك</title>
+<meta name="theme-color" content="#08142f">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#050d22;--navy:#08142f;--n2:#0f1f45;--cream:#f4efe6;--mut:#8f9bbd;--line:rgba(244,239,230,.1);--or:#ff6a13;--gr:#19c37d;--red:#ff4b4b;--h:'Alexandria',sans-serif;--b:'IBM Plex Sans Arabic',sans-serif;--m:'Space Grotesk',monospace}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:400 16px/1.7 var(--b);color:var(--cream);min-height:100vh;background:radial-gradient(900px 600px at 85% -10%,#1b2f6b,transparent 60%),var(--navy);padding:24px 16px 60px}
+a{color:inherit}
+.w{width:min(640px,100%);margin:0 auto}
+.logo{display:inline-flex;align-items:center;gap:10px;font:800 24px var(--h);text-decoration:none}
+.logo i{width:34px;height:34px;border-radius:10px;background:var(--or);display:grid;place-items:center}.logo em{font-style:normal;color:var(--or)}
+h1{font:800 clamp(28px,6vw,40px)/1.2 var(--h);margin:40px 0 8px}h1 em{font-style:normal;color:var(--or)}
+.sub{color:var(--mut);margin-bottom:22px}
+form{display:flex;gap:10px;background:var(--n2);border:1px solid var(--line);border-radius:18px;padding:8px}
+input{flex:1;min-width:0;background:transparent;border:0;outline:none;font:700 20px var(--m);letter-spacing:2px;color:var(--cream);padding:10px 12px;direction:ltr;text-align:center}
+button{border:0;border-radius:12px;background:var(--or);color:#fff;font:600 15px var(--b);padding:0 24px;cursor:pointer}
+button:disabled{opacity:.6}
+.res{margin-top:24px}
+.card{background:var(--cream);color:var(--ink);border-radius:22px;padding:24px;box-shadow:0 40px 80px -30px rgba(0,0,0,.6);animation:in .6s cubic-bezier(.22,.9,.24,1)}
+@keyframes in{from{opacity:0;transform:translateY(20px)}}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.code{font:700 15px var(--m);background:var(--ink);color:var(--cream);padding:5px 12px;border-radius:8px;direction:ltr}
+.st{font:800 24px var(--h);margin:16px 0 4px}
+.st.delivered{color:#0f9d5f}.st.failed,.st.cancelled{color:#d93636}.st.outbound{color:#e0590a}
+.meta{color:#5a6280;font-size:14px}
+.prog{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:20px 0}
+.prog div{height:8px;border-radius:9px;background:#e3dccf}.prog div.on{background:linear-gradient(90deg,var(--gr),#0f9d5f)}
+.prog.bad div.on{background:linear-gradient(90deg,#ff8a65,#d93636)}
+.lbl{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;font-size:11px;color:#8a8fa5;text-align:center;margin-top:-12px;margin-bottom:18px}
+.tl{border-inline-start:2px dashed #d8d0c1;margin:0 8px;padding-inline-start:18px}
+.tl div{position:relative;padding:8px 0}
+.tl div::before{content:"";position:absolute;right:-26px;top:15px;width:12px;height:12px;border-radius:50%;background:#d8d0c1;border:2px solid var(--cream)}
+.tl div:first-child::before{background:var(--or);box-shadow:0 0 0 5px rgba(255,106,19,.2)}
+.tl b{display:block}.tl span{font-size:13px;color:#8a8fa5}
+.cod{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:16px;border-top:2px dashed #d8d0c1}
+.cod b{font:700 22px var(--m)}
+.err{background:rgba(255,75,75,.12);border:1px solid rgba(255,75,75,.4);color:#ffb3b3;border-radius:16px;padding:16px;text-align:center}
+.help{margin-top:22px;text-align:center;color:var(--mut);font-size:14px}
+.help a{color:var(--gr);font-weight:600}
+</style>
+</head>
+<body>
+<div class="w">
+  <a class="logo" href="index.html"><i><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-7 4 5 3-4 4 4"/></svg></i>وصّلي<em>.</em></a>
+  <h1>تتبّع <em>شحنتك</em></h1>
+  <p class="sub">اكتب رقم الشحنة اللي على البوليصة أو اللي وصلك في الرسالة.</p>
+  <form id="f"><input id="c" placeholder="WS2610241234" autocomplete="off" required><button id="b">تتبّع</button></form>
+  <div class="res" id="r"></div>
+  <p class="help">محتاج مساعدة؟ <a id="wa" target="_blank" rel="noopener">كلّمنا على واتساب</a></p>
+</div>
+<script src="config.js"></script>
+<script>
+const API_URL = window.WASSALY_API || "";        // من ملف config.js
+const WHATSAPP = window.WASSALY_WHATSAPP || "";  // من ملف config.js
+
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const dt = s => { const d = new Date(s); return isNaN(d) ? s : d.toLocaleString("ar-EG", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); };
+document.getElementById("wa").href = "https://wa.me/" + WHATSAPP;
+const STEP = { new: 1, picked: 1, inbound: 2, outbound: 3, failed: 3, delivered: 4, returning: 3, returned: 4, cancelled: 1 };
+
+async function track(code) {
+  const r = document.getElementById("r"), b = document.getElementById("b");
+  b.disabled = true; r.innerHTML = "";
+  try {
+    const res = await fetch(API_URL + "?action=track&code=" + encodeURIComponent(code)).then(x => x.json());
+    if (!res.ok) throw new Error(res.error);
+    const s = res.data, n = STEP[s.status] || 1, bad = ["failed","returning","returned","cancelled"].includes(s.status);
+    r.innerHTML = `<div class="card"><div class="hd"><span class="code">${esc(s.code)}</span><span class="meta">${esc(s.governorate)}${s.city ? " — " + esc(s.city) : ""}</span></div>
+      <div class="st ${esc(s.status)}">${esc(s.label)}</div><div class="meta">آخر تحديث: ${dt(s.updated)}${s.receiver ? " · المستلم: " + esc(s.receiver) : ""}</div>
+      <div class="prog ${bad ? "bad" : ""}">${[1,2,3,4].map(i => `<div class="${i <= n ? "on" : ""}"></div>`).join("")}</div>
+      <div class="lbl"><span>اتسجّلت</span><span>في المخزن</span><span>مع المندوب</span><span>${s.status === "returned" ? "مرتجع" : "اتسلّمت"}</span></div>
+      <div class="tl">${s.history.slice().reverse().map(h => `<div><b>${esc(h.label)}</b>${h.note ? `<span>${esc(h.note)}</span><br>` : ""}<span>${dt(h.ts)}</span></div>`).join("")}</div>
+      ${s.cod > 0 && s.status !== "delivered" ? `<div class="cod"><span>المطلوب دفعه عند الاستلام</span><b>${Number(s.cod).toLocaleString("en-US")} ج</b></div>` : ""}</div>`;
+    history.replaceState(null, "", "#" + s.code);
+  } catch (e) { r.innerHTML = `<div class="err">${esc(e.message === "Failed to fetch" ? "مش قادرين نوصل للسيرفر، جرّب تاني" : e.message)}</div>`; }
+  b.disabled = false;
+}
+document.getElementById("f").addEventListener("submit", e => { e.preventDefault(); track(document.getElementById("c").value.trim().toUpperCase()); });
+const h = location.hash.slice(1); if (/^WS\d+$/i.test(h)) { document.getElementById("c").value = h.toUpperCase(); track(h.toUpperCase()); }
+</script>
+</body>
+</html>

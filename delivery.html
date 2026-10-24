@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وصّلي | الدليفري</title>
+<meta name="theme-color" content="#08142f">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.6/JsBarcode.all.min.js"></script>
+<style>
+:root{--ink:#050d22;--navy:#08142f;--n2:#0f1f45;--n3:#162a5c;--cream:#f4efe6;--muted:#8f9bbd;--line:rgba(244,239,230,.1);
+--or:#ff6a13;--gr:#19c37d;--red:#ff4b4b;--yl:#f5b52e;--bl:#4c8dff;
+--h:'Alexandria',sans-serif;--b:'IBM Plex Sans Arabic',sans-serif;--m:'Space Grotesk',monospace;--e:cubic-bezier(.22,.9,.24,1)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font:400 15px/1.6 var(--b);color:var(--cream);background:var(--navy);min-height:100vh}
+a{color:inherit;text-decoration:none}button,input,select,textarea{font:inherit;color:inherit}
+h1,h2,h3{font-family:var(--h);font-weight:700;line-height:1.25}
+.mono{font-family:var(--m);direction:ltr;unicode-bidi:isolate}
+[hidden]{display:none!important}
+
+/* دخول */
+.login{min-height:100vh;display:grid;place-items:center;padding:20px;background:radial-gradient(800px 500px at 80% 0,#1b2f6b,transparent 60%),var(--navy)}
+.login form{width:min(380px,100%);background:var(--n2);border:1px solid var(--line);border-radius:22px;padding:32px;display:grid;gap:14px;box-shadow:0 40px 80px rgba(0,0,0,.4)}
+.brand{display:flex;align-items:center;gap:10px;font:800 24px var(--h)}
+.brand i{width:36px;height:36px;border-radius:11px;background:var(--or);display:grid;place-items:center}
+.brand em{font-style:normal;color:var(--or)}
+
+/* عناصر */
+.in,select.in,textarea.in{width:100%;background:rgba(244,239,230,.05);border:1px solid var(--line);border-radius:12px;padding:11px 13px;outline:none;transition:.2s}
+.in:focus{border-color:var(--or);box-shadow:0 0 0 3px rgba(255,106,19,.15)}
+select.in option{color:#000}
+label.f{display:grid;gap:6px;font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:12px;border:1px solid transparent;cursor:pointer;font-weight:600;font-size:14px;transition:.2s;white-space:nowrap}
+.btn:disabled{opacity:.5;cursor:wait}
+.or{background:var(--or);color:#fff}.or:hover{filter:brightness(1.1)}
+.gr{background:var(--gr);color:#03200f}.rd{background:var(--red);color:#fff}
+.gh{background:rgba(244,239,230,.05);border-color:var(--line)}.gh:hover{border-color:rgba(244,239,230,.3)}
+.sm{padding:6px 12px;font-size:13px;border-radius:9px}
+.err{color:var(--red);font-size:13px;min-height:18px}
+
+/* الهيكل */
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+.side{background:var(--ink);border-inline-end:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;overflow:auto}
+.side .brand{padding:0 8px 18px}
+.side a{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;color:var(--muted);font-weight:500;cursor:pointer}
+.side a svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.side a:hover{color:var(--cream);background:rgba(244,239,230,.04)}
+.side a.on{color:#fff;background:rgba(255,106,19,.14);box-shadow:inset 3px 0 0 var(--or)}
+.side .me{margin-top:auto;padding:12px;border-radius:14px;background:var(--n2);font-size:13px}
+.side .me b{display:block;font-size:14px}
+main{padding:26px 30px 90px;min-width:0}
+.top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap}
+.top h1{font-size:24px}
+.card{background:var(--n2);border:1px solid var(--line);border-radius:18px;padding:20px}
+.grid{display:grid;gap:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--n2);border:1px solid var(--line);border-radius:16px;padding:16px}
+.kpi span{font-size:12px;color:var(--muted)}
+.kpi b{display:block;font:700 26px var(--m);direction:ltr;text-align:right;margin-top:4px}
+.kpi.o{background:linear-gradient(150deg,var(--or),#d94c00);border:0}.kpi.o span{color:#ffe2cf}
+.kpi.g b{color:var(--gr)}.kpi.r b{color:var(--red)}.kpi.y b{color:var(--yl)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.cols2{display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.f3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.f2{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.span2{grid-column:span 2}.span3{grid-column:1/-1}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--n2)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+th{text-align:right;font-weight:600;color:var(--muted);font-size:12px;padding:12px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr.click{cursor:pointer}tbody tr.click:hover{background:rgba(244,239,230,.03)}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600;white-space:nowrap}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.s-new{color:#c7cee3;background:rgba(199,206,227,.1)}.s-picked{color:var(--bl);background:rgba(76,141,255,.12)}
+.s-inbound{color:#a78bfa;background:rgba(167,139,250,.12)}.s-outbound{color:var(--or);background:rgba(255,106,19,.12)}
+.s-delivered{color:var(--gr);background:rgba(25,195,125,.12)}.s-failed{color:var(--yl);background:rgba(245,181,46,.12)}
+.s-returning,.s-returned{color:#f472b6;background:rgba(244,114,182,.12)}.s-cancelled{color:var(--red);background:rgba(255,75,75,.12)}
+.muted{color:var(--muted)}.sm-t{font-size:12px}
+.empty{padding:40px;text-align:center;color:var(--muted)}
+
+/* درج التفاصيل + مودال */
+.ov{position:fixed;inset:0;background:rgba(3,8,22,.6);backdrop-filter:blur(4px);z-index:80;display:flex;justify-content:flex-start}
+.drawer{width:min(520px,100%);height:100%;overflow:auto;background:var(--n2);border-inline-end:1px solid var(--line);padding:24px;animation:sl .35s var(--e)}
+@keyframes sl{from{transform:translateX(40px);opacity:0}}
+.modal{margin:auto;width:min(480px,calc(100% - 30px));background:var(--n2);border:1px solid var(--line);border-radius:20px;padding:24px;animation:sl .3s var(--e);max-height:90vh;overflow:auto}
+.tl{display:grid;gap:0;margin-top:10px}
+.tl div{position:relative;padding:0 26px 16px 0;border-right:2px solid var(--line);margin-right:7px}
+.tl div::before{content:"";position:absolute;right:-8px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--n3);border:2px solid var(--muted)}
+.tl div:last-child{border-color:transparent}
+.tl div.c::before{background:var(--or);border-color:var(--or)}
+.tl b{display:block;font-size:14px}.tl span{font-size:12px;color:var(--muted)}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:8px 12px;font-size:14px;margin:14px 0}
+.kv dt{color:var(--muted)}
+
+/* مسح */
+.scan{font:700 22px var(--m);direction:ltr;text-align:center;letter-spacing:2px;padding:16px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tabs button{padding:9px 14px;border-radius:11px;border:1px solid var(--line);background:transparent;cursor:pointer;font-size:14px;color:var(--muted)}
+.tabs button.on{background:var(--or);border-color:var(--or);color:#fff}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border-radius:10px;background:rgba(244,239,230,.06);font:600 13px var(--m);direction:ltr}
+.chip.ok{background:rgba(25,195,125,.15);color:var(--gr)}.chip.bad{background:rgba(255,75,75,.15);color:var(--red)}
+
+/* مندوب */
+.job{background:var(--n2);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:10px}
+.job .h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.job .cod{font:700 22px var(--m);color:var(--or)}
+.job .acts{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+
+/* رسم */
+.bars{display:flex;align-items:flex-end;gap:6px;height:160px;padding-top:10px}
+.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:2px;align-items:stretch;position:relative}
+.bars i{display:block;border-radius:4px 4px 0 0;min-height:2px}
+.bars i.a{background:rgba(244,239,230,.2)}.bars i.b{background:var(--or)}
+.bars span{font:500 10px var(--m);color:var(--muted);text-align:center;margin-top:4px}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:99;padding:12px 20px;border-radius:12px;background:var(--cream);color:var(--ink);font-weight:600;box-shadow:0 20px 40px rgba(0,0,0,.4);animation:sl .3s var(--e)}
+.toast.bad{background:var(--red);color:#fff}
+.load{position:fixed;top:0;inset-inline:0;height:3px;z-index:99;background:linear-gradient(90deg,transparent,var(--or),transparent);background-size:50% 100%;animation:ld 1s linear infinite}
+@keyframes ld{from{background-position:-50% 0}to{background-position:150% 0}}
+.mnav{display:none}
+
+/* طباعة البوليصة */
+#print{display:none}
+@media print{
+  body{background:#fff}
+  body>*:not(#print){display:none!important}
+  #print{display:block;color:#000;font-family:var(--b)}
+  .lbl{width:100mm;min-height:140mm;border:2px solid #000;border-radius:4mm;padding:5mm;margin:0 auto 5mm;page-break-after:always;display:grid;gap:3mm}
+  .lbl .hd{display:flex;justify-content:space-between;align-items:center;border-bottom:2px dashed #000;padding-bottom:3mm}
+  .lbl .hd b{font:800 22pt var(--h)}
+  .lbl .big{font:800 15pt var(--h)}
+  .lbl .cod{font:800 20pt var(--m);border:2px solid #000;border-radius:3mm;text-align:center;padding:2mm}
+  .lbl svg{width:100%;height:22mm}
+  .lbl small{font-size:9pt;color:#333}
+}
+
+@media(max-width:900px){
+  .app{grid-template-columns:1fr}.side{display:none}
+  main{padding:18px 14px 90px}
+  .cols2,.f3,.f2{grid-template-columns:1fr}.span2{grid-column:auto}
+  .mnav{display:flex;position:fixed;bottom:0;inset-inline:0;z-index:70;background:var(--ink);border-top:1px solid var(--line);overflow-x:auto;padding:6px}
+  .mnav a{flex:1;min-width:68px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 4px;border-radius:10px;font-size:11px;color:var(--muted)}
+  .mnav a svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .mnav a.on{color:var(--or)}
+  .job .acts{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<!-- ======== تسجيل الدخول ======== -->
+<section class="login" id="loginView" hidden>
+  <form id="loginForm">
+    <div class="brand"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-7 4 5 3-4 4 4"/></svg></i>وصّلي<em>.</em></div>
+    <p class="muted" id="loginSub">سيستم الموظفين — سجّل دخولك</p>
+    <label class="f">اسم المستخدم<input class="in" name="username" autocomplete="username" required></label>
+    <label class="f">الباسورد<input class="in" name="password" type="password" autocomplete="current-password" required></label>
+    <button class="btn or" type="submit">دخول</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</section>
+
+<!-- ======== السيستم ======== -->
+<div class="app" id="appView" hidden>
+  <aside class="side" id="side"></aside>
+  <main id="main"></main>
+</div>
+<nav class="mnav" id="mnav" hidden></nav>
+<div id="print"></div>
+
+<script src="config.js"></script>
+<script>
+/* ============ الإعدادات ============ */
+const API_URL = window.WASSALY_API || ""; // اللينك بيتحط في ملف config.js
+const APP_MODE = "delivery"; // admin = الإدارة والمحاسبة ، delivery = صفحة المناديب
+
+/* ============ أدوات ============ */
+const $ = (s, e = document) => e.querySelector(s), $$ = (s, e = document) => [...e.querySelectorAll(s)];
+const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const money = n => (Number(n) || 0).toLocaleString("en-US", { maximumFractionDigits: 2 });
+const dt = v => { if (!v) return "—"; const d = new Date(v); return isNaN(d) ? "—" : d.toLocaleString("ar-EG", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }); };
+const today = () => new Date().toISOString().slice(0, 10);
+const store = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { v == null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} } };
+
+const ST = { new: "تم التسجيل", picked: "استلام من التاجر", inbound: "في المخزن", outbound: "خرجت للتوصيل", delivered: "تم التسليم",
+  failed: "محاولة فاشلة", returning: "مرتجع في الطريق", returned: "تم الإرجاع", cancelled: "ملغية" };
+const pill = s => `<span class="pill s-${esc(s)}">${esc(ST[s] || s)}</span>`;
+const ROLE_NAME = { admin: "مدير", accountant: "محاسب", ops: "عمليات ومخزن", courier: "مندوب" };
+const GOVS = ["القاهرة","الجيزة","الإسكندرية","القليوبية","الشرقية","الدقهلية","الغربية","المنوفية","البحيرة","كفر الشيخ","دمياط","بورسعيد","الإسماعيلية","السويس","الفيوم","بني سويف","المنيا","أسيوط","سوهاج","قنا","الأقصر","أسوان","البحر الأحمر","مطروح","الوادي الجديد","شمال سيناء","جنوب سيناء"];
+const FAIL_REASONS = ["العميل مبيردش", "العميل طلب تأجيل", "العنوان غلط", "العميل رفض الاستلام", "التليفون مقفول", "سبب تاني"];
+
+let TOKEN = store.get("ws_token"), ME = null, RATES = [], loading = 0;
+function busy(on) { loading += on ? 1 : -1; let b = $("#ld"); if (loading > 0 && !b) document.body.insertAdjacentHTML("beforeend", '<div class="load" id="ld"></div>'); if (loading <= 0 && b) b.remove(); }
+function toast(msg, bad) { $$(".toast").forEach(t => t.remove()); document.body.insertAdjacentHTML("beforeend", `<div class="toast ${bad ? "bad" : ""}">${esc(msg)}</div>`); setTimeout(() => $$(".toast").forEach(t => t.remove()), 3200); }
+
+async function api(action, payload = {}) {
+  if (!API_URL) throw new Error("لازم تحط لينك الـ API في ملف config.js الأول");
+  busy(true);
+  try {
+    const r = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify({ action, token: TOKEN, ...payload }) });
+    const j = await r.json();
+    if (!j.ok) { if (/الجلسة|سجّل دخول/.test(j.error)) logout(true); throw new Error(j.error); }
+    return j.data;
+  } finally { busy(false); }
+}
+async function run(fn, okMsg) { try { const r = await fn(); if (okMsg) toast(okMsg); return r; } catch (e) { toast(e.message, true); throw e; } }
+
+/* ============ أيقونات ============ */
+const I = {
+  dash: '<path d="M3 13h8V3H3zM13 21h8V11h-8zM3 21h8v-6H3zM13 3v6h8V3z"/>',
+  box: '<path d="M21 8l-9-5-9 5v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  wh: '<path d="M3 21V8l9-5 9 5v13M7 21v-7h10v7M7 17h10"/>',
+  route: '<circle cx="6" cy="19" r="2"/><circle cx="18" cy="5" r="2"/><path d="M8 19h8a4 4 0 000-8H8a4 4 0 010-8h8"/>',
+  bike: '<circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 6h2l3 7.5M5.5 17.5l4-7h6l3 7M9 6h3"/>',
+  store: '<path d="M3 9l1.5-5h15L21 9M3 9h18v11H3zM3 9a3 3 0 006 0 3 3 0 006 0 3 3 0 006 0M9 20v-6h6v6"/>',
+  cash: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 10v4M18 10v4"/>',
+  chart: '<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',
+  gear: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/>',
+  out: '<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>'
+};
+const svg = k => `<svg viewBox="0 0 24 24">${I[k]}</svg>`;
+
+/* ============ الصفحات حسب الدور ============ */
+const PAGES = [
+  { id: "dash", t: "لوحة التحكم", i: "dash", r: ["admin", "accountant", "ops"] },
+  { id: "ships", t: "الشحنات", i: "box", r: ["admin", "accountant", "ops"] },
+  { id: "new", t: "شحنة جديدة", i: "plus", r: ["admin", "ops"] },
+  { id: "wh", t: "المخزن (وارد وصادر)", i: "wh", r: ["admin", "ops"] },
+  { id: "dispatch", t: "توزيع على المناديب", i: "route", r: ["admin", "ops"] },
+  { id: "courier", t: "شحناتي (دليفري)", i: "bike", r: ["admin", "courier"] },
+  { id: "merchants", t: "التجار", i: "store", r: ["admin", "accountant", "ops"] },
+  { id: "acc", t: "المحاسبة", i: "cash", r: ["admin", "accountant"] },
+  { id: "reports", t: "التقارير", i: "chart", r: ["admin", "accountant", "ops"] },
+  { id: "settings", t: "الإعدادات", i: "gear", r: ["admin", "accountant", "ops", "courier"] }
+];
+const MODE_PAGES = { admin: ["dash", "ships", "new", "wh", "dispatch", "merchants", "acc", "reports", "settings"], delivery: ["courier", "settings"] };
+const myPages = () => PAGES.filter(p => p.r.includes(ME.role) && MODE_PAGES[APP_MODE].includes(p.id));
+
+function shell() {
+  if (!myPages().filter(p => p.id !== "settings").length) {
+    showLogin(); TOKEN = null; store.set("ws_token", null);
+    $("#loginErr").innerHTML = APP_MODE === "admin" ? 'الحساب ده حساب مندوب — ادخل من <a href="delivery.html" style="color:var(--or)">صفحة الدليفري</a>' : 'الحساب ده مش حساب مندوب — ادخل من <a href="admin.html" style="color:var(--or)">صفحة الإدارة</a>';
+    return;
+  }
+  $("#loginView").hidden = true; $("#appView").hidden = false; $("#mnav").hidden = false;
+  const links = myPages().map(p => `<a data-p="${p.id}">${svg(p.i)}<span>${p.t}</span></a>`).join("");
+  $("#side").innerHTML = `<div class="brand"><i><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-7 4 5 3-4 4 4"/></svg></i>وصّلي<em>.</em></div>${links}
+    <div class="me"><b>${esc(ME.name)}</b><span class="muted">${ROLE_NAME[ME.role]}</span><br><a style="padding:8px 0 0;display:inline-flex" id="logoutBtn">${svg("out")} خروج</a></div>`;
+  $("#mnav").innerHTML = myPages().map(p => `<a data-p="${p.id}">${svg(p.i)}<span>${p.t.split(" ")[0]}</span></a>`).join("");
+  $$("[data-p]").forEach(a => a.onclick = () => go(a.dataset.p));
+  $("#logoutBtn").onclick = () => logout();
+  const h = location.hash.slice(1);
+  go(myPages().some(p => p.id === h) ? h : myPages()[0].id);
+}
+function go(id) {
+  if (!myPages().some(p => p.id === id)) id = myPages()[0].id;
+  try { history.replaceState(null, "", "#" + id); } catch (e) {}
+  $$("[data-p]").forEach(a => a.classList.toggle("on", a.dataset.p === id));
+  $("#main").innerHTML = '<div class="empty">جاري التحميل…</div>';
+  VIEWS[id]().catch(e => { $("#main").innerHTML = `<div class="empty">${esc(e.message)}</div>`; });
+  scrollTo(0, 0);
+}
+function logout(silent) { if (!silent) api("logout").catch(() => {}); TOKEN = null; store.set("ws_token", null); ME = null; showLogin(); }
+function showLogin() { $("#appView").hidden = true; $("#mnav").hidden = true; $("#loginView").hidden = false; }
+
+$("#loginForm").onsubmit = async e => {
+  e.preventDefault(); const f = e.target; $("#loginErr").textContent = "";
+  try {
+    const r = await api("login", { username: f.username.value, password: f.password.value });
+    TOKEN = r.token; ME = r.user; store.set("ws_token", TOKEN); f.reset(); await boot2();
+  } catch (err) { $("#loginErr").textContent = err.message; }
+};
+
+/* ============ مودال ودرج ============ */
+function modal(html, drawer) {
+  closeModal();
+  document.body.insertAdjacentHTML("beforeend", `<div class="ov" id="ov"><div class="${drawer ? "drawer" : "modal"}" id="mbox">${html}</div></div>`);
+  $("#ov").onclick = e => { if (e.target.id === "ov") closeModal(); };
+  return $("#mbox");
+}
+function closeModal() { $("#ov")?.remove(); }
+const head = (t, actions = "") => `<div class="top"><h1>${t}</h1><div class="row">${actions}</div></div>`;
+
+/* ============ الصفحات ============ */
+const VIEWS = {};
+
+VIEWS.dash = async () => {
+  const d = await api("dashboard"), b = d.byStatus || {};
+  const max = Math.max(1, ...d.daily.map(x => Math.max(x.created, x.delivered)));
+  $("#main").innerHTML = head("لوحة التحكم", `<button class="btn or" onclick="go('new')">+ شحنة جديدة</button>`) + `
+  <div class="kpis">
+    <div class="kpi o"><span>كل الشحنات</span><b>${d.total}</b></div>
+    <div class="kpi"><span>اتسجلت النهارده</span><b>${d.newToday}</b></div>
+    <div class="kpi"><span>في المخزن</span><b>${(b.inbound || 0) + (b.picked || 0)}</b></div>
+    <div class="kpi y"><span>مع المناديب</span><b>${(b.outbound || 0) + (b.failed || 0)}</b></div>
+    <div class="kpi g"><span>اتسلّمت</span><b>${b.delivered || 0}</b></div>
+    <div class="kpi r"><span>مرتجعات</span><b>${(b.returning || 0) + (b.returned || 0)}</b></div>
+    <div class="kpi"><span>تحصيل النهارده (ج)</span><b>${money(d.codToday)}</b></div>
+    <div class="kpi y"><span>عهدة مع المناديب (ج)</span><b>${money(d.custody)}</b></div>
+    <div class="kpi"><span>مستحق للتجار (ج)</span><b>${money(d.merchantDue)}</b></div>
+  </div>
+  <div class="cols2">
+    <div class="card"><div class="row" style="justify-content:space-between"><h3>آخر ١٤ يوم</h3><span class="sm-t muted"><span style="color:var(--or)">■</span> اتسلّمت &nbsp; <span style="opacity:.4">■</span> اتسجلت</span></div>
+      <div class="bars">${d.daily.map(x => `<div title="${x.day}: ${x.created} / ${x.delivered}"><i class="a" style="height:${x.created / max * 130}px"></i><i class="b" style="height:${x.delivered / max * 130}px"></i><span>${x.day.slice(8)}</span></div>`).join("")}</div></div>
+    <div class="card"><h3 style="margin-bottom:10px">آخر الحركات</h3>
+      ${d.recent.length ? d.recent.map(h => `<div class="row" style="justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--line)"><span><a class="mono" onclick="openShip('${esc(h.code)}')" style="cursor:pointer;color:var(--or)">${esc(h.code)}</a> ${ST[h.status] ? pill(h.status) : `<span class="sm-t muted">${esc(h.note)}</span>`}</span><span class="sm-t muted">${dt(h.ts)}</span></div>`).join("") : '<div class="empty">لسه مفيش حركات</div>'}</div>
+  </div>`;
+};
+
+VIEWS.ships = async (filter = {}) => {
+  const canEdit = ["admin", "ops"].includes(ME.role);
+  $("#main").innerHTML = head("الشحنات", canEdit ? `<button class="btn or" onclick="go('new')">+ شحنة جديدة</button>` : "") + `
+  <div class="card" style="margin-bottom:14px"><form class="row" id="sf">
+    <input class="in" name="q" placeholder="بحث بالكود أو الاسم أو التليفون" style="flex:2;min-width:200px" value="${esc(filter.q || "")}">
+    <select class="in" name="status" style="flex:1;min-width:140px"><option value="">كل الحالات</option>${Object.entries(ST).map(([k, v]) => `<option value="${k}" ${filter.status === k ? "selected" : ""}>${v}</option>`).join("")}</select>
+    <select class="in" name="governorate" style="flex:1;min-width:140px"><option value="">كل المحافظات</option>${GOVS.map(g => `<option ${filter.governorate === g ? "selected" : ""}>${g}</option>`).join("")}</select>
+    <input class="in" type="date" name="from" style="flex:1;min-width:140px" value="${esc(filter.from || "")}">
+    <input class="in" type="date" name="to" style="flex:1;min-width:140px" value="${esc(filter.to || "")}">
+    <button class="btn gh">بحث</button>
+  </form></div><div id="slist"><div class="empty">جاري التحميل…</div></div>`;
+  $("#sf").onsubmit = e => { e.preventDefault(); VIEWS.ships(Object.fromEntries(new FormData(e.target))); };
+  const r = await api("listShipments", { filter });
+  $("#slist").innerHTML = shipTable(r.items, r.total);
+};
+function shipTable(items, total) {
+  if (!items.length) return '<div class="card empty">مفيش شحنات</div>';
+  return `<p class="muted sm-t" style="margin-bottom:8px">${total} شحنة</p><div class="tw"><table><thead><tr><th>الكود</th><th>المستلم</th><th>المحافظة</th><th>التاجر</th><th>التحصيل</th><th>الحالة</th><th>المندوب</th><th>التاريخ</th></tr></thead><tbody>
+  ${items.map(s => `<tr class="click" onclick="openShip('${esc(s.code)}')"><td class="mono" style="color:var(--or)">${esc(s.code)}</td><td>${esc(s.receiverName)}<br><span class="sm-t muted mono">${esc(s.receiverPhone)}</span></td><td>${esc(s.governorate)}<br><span class="sm-t muted">${esc(s.city)}</span></td><td>${esc(s.merchantName || "—")}</td><td class="mono">${money(s.cod)}</td><td>${pill(s.status)}</td><td>${esc(s.courierName || "—")}</td><td class="sm-t muted">${dt(s.created)}</td></tr>`).join("")}
+  </tbody></table></div>`;
+}
+
+async function openShip(code) {
+  const s = await run(() => api("getShipment", { code }));
+  const canEdit = ["admin", "ops"].includes(ME.role);
+  const box = modal(`
+    <div class="row" style="justify-content:space-between"><h2 class="mono">${esc(s.code)}</h2><button class="btn gh sm" onclick="closeModal()">✕</button></div>
+    <div style="margin-top:6px">${pill(s.status)} ${s.attempts ? `<span class="sm-t muted">محاولات: ${s.attempts}</span>` : ""} ${s.settled === true || s.settled === "TRUE" ? '<span class="pill s-delivered">اتسوّت مع التاجر</span>' : ""}</div>
+    <dl class="kv">
+      <dt>المستلم</dt><dd>${esc(s.receiverName)} — <a class="mono" href="tel:${esc(s.receiverPhone)}">${esc(s.receiverPhone)}</a></dd>
+      <dt>العنوان</dt><dd>${esc(s.governorate)} - ${esc(s.city)}<br><span class="muted">${esc(s.address)}</span></dd>
+      <dt>التاجر</dt><dd>${esc(s.merchantName || "—")} <span class="mono muted">${esc(s.senderPhone)}</span></dd>
+      <dt>المحتوى</dt><dd>${esc(s.content || "—")} · ${s.pieces} قطعة · ${s.weight || 0} كجم</dd>
+      <dt>التحصيل</dt><dd class="mono" style="color:var(--or);font-weight:700">${money(s.cod)} ج</dd>
+      <dt>مصاريف الشحن</dt><dd class="mono">${money(s.fee)} ج</dd>
+      <dt>المندوب</dt><dd>${esc(s.courierName || "—")}</dd>
+      <dt>ملاحظات</dt><dd>${esc(s.notes || "—")}</dd>
+    </dl>
+    <div class="row">
+      <button class="btn gh sm" id="pr">🖨 طباعة البوليصة</button>
+      ${canEdit ? `<button class="btn gh sm" id="ed">تعديل</button>` : ""}
+    </div>
+    ${canEdit ? `<div class="card" style="margin-top:14px;padding:14px"><h3 style="font-size:15px;margin-bottom:10px">تغيير الحالة</h3>
+      <div class="f2"><select class="in" id="nst">${Object.entries(ST).map(([k, v]) => `<option value="${k}" ${k === s.status ? "selected" : ""}>${v}</option>`).join("")}</select>
+      <input class="in" id="nnote" placeholder="ملاحظة (اختياري)"></div>
+      <button class="btn or sm" style="margin-top:10px" id="sst">حفظ الحالة</button></div>` : ""}
+    <h3 style="margin-top:18px;font-size:15px">تاريخ الشحنة</h3>
+    <div class="tl">${s.history.slice().reverse().map((h, i) => `<div class="${i === 0 ? "c" : ""}"><b>${esc(ST[h.status] || h.note)}</b><span>${dt(h.ts)} ${h.by ? "· " + esc(h.by) : ""} ${ST[h.status] && h.note ? "· " + esc(h.note) : ""}</span></div>`).join("")}</div>
+  `, true);
+  $("#pr", box).onclick = () => printLabels([s]);
+  if (canEdit) {
+    $("#sst", box).onclick = async () => { await run(() => api("setStatus", { code: s.code, status: $("#nst").value, note: $("#nnote").value }), "اتحفظت الحالة"); openShip(s.code); };
+    $("#ed", box).onclick = () => editShip(s);
+  }
+}
+function editShip(s) {
+  const box = modal(`<h2>تعديل ${esc(s.code)}</h2><form id="ef" class="f2" style="margin-top:14px">
+    <label class="f">اسم المستلم<input class="in" name="receiverName" value="${esc(s.receiverName)}"></label>
+    <label class="f">تليفون المستلم<input class="in" name="receiverPhone" value="${esc(s.receiverPhone)}"></label>
+    <label class="f">المحافظة<select class="in" name="governorate">${GOVS.map(g => `<option ${g === s.governorate ? "selected" : ""}>${g}</option>`).join("")}</select></label>
+    <label class="f">المنطقة<input class="in" name="city" value="${esc(s.city)}"></label>
+    <label class="f span2">العنوان<input class="in" name="address" value="${esc(s.address)}"></label>
+    <label class="f">التحصيل<input class="in" type="number" name="cod" value="${esc(s.cod)}"></label>
+    <label class="f">مصاريف الشحن<input class="in" type="number" name="fee" value="${esc(s.fee)}"></label>
+    <label class="f span2">ملاحظات<input class="in" name="notes" value="${esc(s.notes)}"></label>
+    <div class="row span2"><button class="btn or">حفظ</button><button type="button" class="btn gh" onclick="openShip('${esc(s.code)}')">رجوع</button></div></form>`);
+  $("#ef", box).onsubmit = async e => { e.preventDefault(); await run(() => api("updateShipment", { code: s.code, data: Object.fromEntries(new FormData(e.target)) }), "اتعدلت"); openShip(s.code); };
+}
+
+VIEWS.new = async () => {
+  const [ms, rates] = await Promise.all([api("listMerchants"), api("rates")]); RATES = rates;
+  $("#main").innerHTML = head("شحنة جديدة") + `<form class="card f3" id="nf">
+    <label class="f span2">التاجر<select class="in" name="merchantId"><option value="">— من غير تاجر (عميل فردي) —</option>${ms.map(m => `<option value="${esc(m.id)}">${esc(m.name)}</option>`).join("")}</select></label>
+    <label class="f">&nbsp;<button type="button" class="btn gh" id="addM">+ تاجر جديد</button></label>
+    <label class="f">اسم المستلم *<input class="in" name="receiverName" required></label>
+    <label class="f">تليفون المستلم *<input class="in" name="receiverPhone" type="tel" required></label>
+    <label class="f">المحافظة *<select class="in" name="governorate" id="gov">${GOVS.map(g => `<option>${g}</option>`).join("")}</select></label>
+    <label class="f">المنطقة<input class="in" name="city"></label>
+    <label class="f span2">العنوان بالتفصيل<input class="in" name="address"></label>
+    <label class="f">المحتوى<input class="in" name="content" placeholder="مثلاً: هدوم"></label>
+    <label class="f">عدد القطع<input class="in" name="pieces" type="number" value="1" min="1"></label>
+    <label class="f">الوزن (كجم)<input class="in" name="weight" type="number" step="0.1"></label>
+    <label class="f">مبلغ التحصيل (ج)<input class="in" name="cod" type="number" value="0"></label>
+    <label class="f">مصاريف الشحن (ج)<input class="in" name="fee" type="number" id="fee"></label>
+    <label class="f span2">ملاحظات<input class="in" name="notes"></label>
+    <div class="row span3"><button class="btn or">حفظ الشحنة</button><label class="row sm-t muted"><input type="checkbox" id="autoPrint" checked> اطبع البوليصة بعد الحفظ</label></div>
+  </form><div id="created"></div>`;
+  const setFee = () => { const r = RATES.find(x => x.governorate === $("#gov").value); $("#fee").value = r ? r.fee : ""; };
+  $("#gov").onchange = setFee; setFee();
+  $("#addM").onclick = () => merchantForm({}, () => VIEWS.new());
+  $("#nf").onsubmit = async e => {
+    e.preventDefault(); const f = e.target;
+    const s = await run(() => api("createShipment", { data: Object.fromEntries(new FormData(f)) }));
+    toast("اتسجلت الشحنة " + s.code);
+    $("#created").innerHTML = `<div class="card" style="margin-top:14px;border-color:var(--gr)"><b>اتسجلت ✓</b> كود الشحنة: <span class="mono" style="color:var(--or);font-size:20px">${esc(s.code)}</span> <button class="btn gh sm" id="pp">طباعة البوليصة</button></div>`;
+    $("#pp").onclick = () => printLabels([s]);
+    if ($("#autoPrint").checked) printLabels([s]);
+    const keep = f.merchantId.value; f.reset(); f.merchantId.value = keep; setFee(); f.receiverName.focus();
+  };
+};
+
+VIEWS.wh = async () => {
+  const users = await api("listUsers"), couriers = users.filter(u => u.role === "courier" && u.active);
+  const MODES = [["pickup", "استلام من التاجر"], ["in", "وارد المخزن"], ["out", "صادر للتوصيل"], ["ret", "مرتجع في الطريق"], ["retdone", "تسليم مرتجع للتاجر"]];
+  let mode = "in", list = [];
+  $("#main").innerHTML = head("المخزن — وارد وصادر") + `
+  <div class="tabs" id="mt">${MODES.map(([k, v]) => `<button data-k="${k}" class="${k === mode ? "on" : ""}">${v}</button>`).join("")}</div>
+  <div class="cols2"><div class="card grid">
+    <p class="muted sm-t">امسح الباركود بجهاز المسح أو اكتب الكود ودوس Enter. تقدر تضيف كذا شحنة مرة واحدة.</p>
+    <input class="in scan" id="sc" placeholder="WS…" autocomplete="off">
+    <div id="cw" hidden><label class="f">المندوب اللي هيستلم<select class="in" id="cr">${couriers.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("")}</select></label></div>
+    <input class="in" id="wn" placeholder="ملاحظة (اختياري)">
+    <div class="row"><button class="btn or" id="go">تأكيد <span id="cnt">0</span> شحنة</button><button class="btn gh" id="clr">مسح القائمة</button></div>
+  </div><div class="card"><h3 style="font-size:15px;margin-bottom:10px">القائمة</h3><div class="row" id="ql"><span class="muted">فاضية</span></div></div></div>`;
+  const draw = () => { $("#cnt").textContent = list.length; $("#ql").innerHTML = list.length ? list.map(c => `<span class="chip ${c.st || ""}" title="${esc(c.err || "")}">${esc(c.code)}${c.err ? " ✕" : c.st === "ok" ? " ✓" : ""}</span>`).join("") : '<span class="muted">فاضية</span>'; };
+  $$("#mt button").forEach(b => b.onclick = () => { mode = b.dataset.k; $$("#mt button").forEach(x => x.classList.toggle("on", x === b)); $("#cw").hidden = mode !== "out"; $("#sc").focus(); });
+  $("#sc").onkeydown = e => { if (e.key !== "Enter") return; e.preventDefault(); const v = e.target.value.trim().toUpperCase(); if (v && !list.some(x => x.code === v)) list.push({ code: v }); e.target.value = ""; draw(); };
+  $("#clr").onclick = () => { list = []; draw(); };
+  $("#go").onclick = async () => {
+    const codes = list.filter(x => x.st !== "ok").map(x => x.code); if (!codes.length) return toast("القائمة فاضية", true);
+    if (mode === "out" && !couriers.length) return toast("ضيف مندوب الأول من الإعدادات", true);
+    const res = await run(() => api("scan", { kind: mode, codes, note: $("#wn").value, courierId: mode === "out" ? $("#cr").value : "" }));
+    res.forEach(r => { const x = list.find(y => y.code === r.code); x.st = r.ok ? "ok" : "bad"; x.err = r.error; });
+    draw(); const bad = res.filter(r => !r.ok).length; toast(bad ? `اتعمل ${res.length - bad} وفيه ${bad} غلط` : `تمام — ${res.length} شحنة`, !!bad);
+  };
+  $("#sc").focus();
+};
+
+VIEWS.dispatch = async () => {
+  const [r, users] = await Promise.all([api("listShipments", { filter: {} }), api("listUsers")]);
+  const couriers = users.filter(u => u.role === "courier" && u.active);
+  const items = r.items.filter(s => ["inbound", "failed", "picked"].includes(s.status));
+  const byGov = {}; items.forEach(s => (byGov[s.governorate] = byGov[s.governorate] || []).push(s));
+  $("#main").innerHTML = head("توزيع الشحنات على المناديب") + `
+  <div class="card row" style="margin-bottom:14px">
+    <select class="in" id="dc" style="max-width:260px">${couriers.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join("") || "<option value=''>مفيش مناديب</option>"}</select>
+    <button class="btn or" id="da">سلّم المختار للمندوب وخرّجه للتوصيل</button><span class="muted sm-t" id="dn">0 مختار</span>
+  </div>
+  ${items.length ? Object.entries(byGov).map(([g, l]) => `<div class="card" style="margin-bottom:12px"><label class="row" style="margin-bottom:8px"><input type="checkbox" class="ga"> <h3 style="font-size:16px">${esc(g)}</h3><span class="muted sm-t">${l.length} شحنة</span></label>
+    ${l.map(s => `<label class="row" style="padding:8px 0;border-top:1px solid var(--line)"><input type="checkbox" class="dk" value="${esc(s.code)}"><span class="mono" style="color:var(--or)">${esc(s.code)}</span><span>${esc(s.receiverName)}</span><span class="muted sm-t">${esc(s.city)}</span>${pill(s.status)}<span class="mono sm-t">${money(s.cod)} ج</span></label>`).join("")}</div>`).join("") : '<div class="card empty">مفيش شحنات مستنية توزيع (لازم تكون في المخزن)</div>'}`;
+  const cnt = () => $("#dn").textContent = $$(".dk:checked").length + " مختار";
+  $$(".ga").forEach(g => g.onchange = () => { $$(".dk", g.closest(".card")).forEach(c => c.checked = g.checked); cnt(); });
+  $$(".dk").forEach(c => c.onchange = cnt);
+  $("#da").onclick = async () => {
+    const codes = $$(".dk:checked").map(c => c.value); if (!codes.length) return toast("اختار شحنات الأول", true);
+    if (!$("#dc").value) return toast("ضيف مندوب الأول", true);
+    const res = await run(() => api("scan", { kind: "out", codes, courierId: $("#dc").value }));
+    const bad = res.filter(x => !x.ok).length; toast(bad ? `فيه ${bad} مااتعملوش` : `اتسلّم ${codes.length} شحنة للمندوب`, !!bad); VIEWS.dispatch();
+  };
+};
+
+VIEWS.courier = async () => {
+  const list = await api("myShipments");
+  const total = list.filter(s => s.status === "outbound").reduce((t, s) => t + Number(s.cod || 0), 0);
+  $("#main").innerHTML = head("شحناتي", `<button class="btn gh" onclick="go('courier')">تحديث</button>`) + `
+  <div class="kpis"><div class="kpi o"><span>معايا</span><b>${list.length}</b></div><div class="kpi"><span>المفروض أحصّل (ج)</span><b>${money(total)}</b></div></div>
+  <div class="grid">${list.length ? list.map(s => `<div class="job">
+    <div class="h"><span class="mono" style="color:var(--or)">${esc(s.code)}</span>${pill(s.status)}</div>
+    <div><b style="font-size:17px">${esc(s.receiverName)}</b><br><span class="muted">${esc(s.governorate)} - ${esc(s.city)} · ${esc(s.address)}</span></div>
+    <div class="h"><span class="cod">${money(s.cod)} ج</span><span class="muted sm-t">${esc(s.content || "")} ${s.notes ? "· " + esc(s.notes) : ""}</span></div>
+    <div class="acts">
+      <a class="btn gh sm" href="tel:${esc(s.receiverPhone)}">📞 اتصال</a>
+      <a class="btn gh sm" target="_blank" rel="noopener" href="https://wa.me/2${esc(String(s.receiverPhone).replace(/^\+?2/, ""))}">واتساب</a>
+      <button class="btn gr sm" data-d="${esc(s.code)}" data-c="${esc(s.cod)}">✓ اتسلّمت</button>
+      <button class="btn rd sm" data-f="${esc(s.code)}">✕ مااتسلّمتش</button>
+    </div></div>`).join("") : '<div class="card empty">مفيش شحنات معاك دلوقتي</div>'}</div>`;
+  $$("[data-d]").forEach(b => b.onclick = () => {
+    const box = modal(`<h2>تأكيد التسليم</h2><p class="muted mono">${esc(b.dataset.d)}</p><label class="f" style="margin-top:12px">المبلغ اللي اتحصّل (ج)<input class="in mono" id="am" type="number" value="${esc(b.dataset.c)}"></label>
+      <div class="row" style="margin-top:14px"><button class="btn gr" id="ok">تأكيد</button><button class="btn gh" onclick="closeModal()">إلغاء</button></div>`);
+    $("#ok", box).onclick = async () => { await run(() => api("deliver", { code: b.dataset.d, amount: $("#am").value }), "اتسجّل التسليم"); closeModal(); VIEWS.courier(); };
+  });
+  $$("[data-f]").forEach(b => b.onclick = () => {
+    const box = modal(`<h2>ليه مااتسلّمتش؟</h2><div class="grid" style="margin-top:12px">${FAIL_REASONS.map(r => `<label class="row"><input type="radio" name="rs" value="${r}"> ${r}</label>`).join("")}<input class="in" id="rx" placeholder="تفاصيل (اختياري)"></div>
+      <div class="row" style="margin-top:14px"><button class="btn rd" id="ok">تسجيل</button><button class="btn gh" onclick="closeModal()">إلغاء</button></div>`);
+    $("#ok", box).onclick = async () => { const r = ($("input[name=rs]:checked")?.value || "") + ($("#rx").value ? " - " + $("#rx").value : ""); if (!r) return toast("اختار السبب", true);
+      await run(() => api("fail", { code: b.dataset.f, reason: r }), "اتسجّلت المحاولة"); closeModal(); VIEWS.courier(); };
+  });
+};
+
+function merchantForm(m, done) {
+  const box = modal(`<h2>${m.id ? "تعديل تاجر" : "تاجر جديد"}</h2><form id="mf" class="grid" style="margin-top:14px">
+    <label class="f">اسم التاجر / المتجر *<input class="in" name="name" value="${esc(m.name || "")}" required></label>
+    <label class="f">التليفون<input class="in" name="phone" value="${esc(m.phone || "")}"></label>
+    <label class="f">المحافظة<select class="in" name="governorate"><option></option>${GOVS.map(g => `<option ${g === m.governorate ? "selected" : ""}>${g}</option>`).join("")}</select></label>
+    <label class="f">العنوان<input class="in" name="address" value="${esc(m.address || "")}"></label>
+    <label class="f">ملاحظات<input class="in" name="notes" value="${esc(m.notes || "")}"></label>
+    <div class="row"><button class="btn or">حفظ</button><button type="button" class="btn gh" onclick="closeModal()">إلغاء</button></div></form>`);
+  $("#mf", box).onsubmit = async e => { e.preventDefault(); await run(() => api("saveMerchant", { data: { ...Object.fromEntries(new FormData(e.target)), id: m.id || "" } }), "اتحفظ"); closeModal(); done && done(); };
+}
+VIEWS.merchants = async () => {
+  const ms = await api("listMerchants");
+  $("#main").innerHTML = head("التجار", `<button class="btn or" id="am">+ تاجر جديد</button>`) + (ms.length ? `<div class="tw"><table><thead><tr><th>الاسم</th><th>التليفون</th><th>المحافظة</th><th>عدد الشحنات</th><th></th></tr></thead><tbody>
+    ${ms.map((m, i) => `<tr><td><b>${esc(m.name)}</b></td><td class="mono">${esc(m.phone)}</td><td>${esc(m.governorate)}</td><td class="mono">${m.count}</td><td class="row"><button class="btn gh sm" data-e="${i}">تعديل</button><button class="btn gh sm" data-s="${esc(m.id)}">شحناته</button></td></tr>`).join("")}</tbody></table></div>` : '<div class="card empty">لسه مفيش تجار</div>');
+  $("#am").onclick = () => merchantForm({}, VIEWS.merchants);
+  $$("[data-e]").forEach(b => b.onclick = () => merchantForm(ms[b.dataset.e], VIEWS.merchants));
+  $$("[data-s]").forEach(b => b.onclick = async () => { const r = await run(() => api("listShipments", { filter: { merchantId: b.dataset.s } })); modal(`<div class="row" style="justify-content:space-between"><h2>شحنات التاجر</h2><button class="btn gh sm" onclick="closeModal()">✕</button></div><div style="margin-top:12px">${shipTable(r.items, r.total)}</div>`, true); });
+};
+
+VIEWS.acc = async () => {
+  const a = await api("accounting");
+  const TY = { cod: "تحصيل من عميل", handover: "استلام عهدة من مندوب", payout: "دفع لتاجر", expense: "مصروف", income: "إيراد" };
+  $("#main").innerHTML = head("المحاسبة") + `
+  <div class="kpis">
+    <div class="kpi o"><span>الكاش في الخزنة (ج)</span><b>${money(a.cash)}</b></div>
+    <div class="kpi g"><span>إيراد الشحن (ج)</span><b>${money(a.feesEarned)}</b></div>
+    <div class="kpi"><span>إيرادات تانية (ج)</span><b>${money(a.income)}</b></div>
+    <div class="kpi r"><span>المصاريف (ج)</span><b>${money(a.expense)}</b></div>
+    <div class="kpi ${a.profit >= 0 ? "g" : "r"}"><span>صافي الربح (ج)</span><b>${money(a.profit)}</b></div>
+    <div class="kpi"><span>اتدفع للتجار (ج)</span><b>${money(a.payouts)}</b></div>
+  </div>
+  <div class="cols2">
+    <div class="card"><h3 style="margin-bottom:10px">عهدة المناديب</h3>
+      ${a.couriers.length ? `<div class="tw" style="border:0"><table style="min-width:0"><thead><tr><th>المندوب</th><th>حصّل</th><th>سلّم</th><th>معاه دلوقتي</th><th></th></tr></thead><tbody>
+      ${a.couriers.map(c => `<tr><td>${esc(c.name)}<br><span class="sm-t muted">${c.active} شحنة معاه</span></td><td class="mono">${money(c.collected)}</td><td class="mono">${money(c.handed)}</td><td class="mono" style="color:${c.balance > 0 ? "var(--yl)" : "inherit"};font-weight:700">${money(c.balance)}</td><td>${c.balance > 0 ? `<button class="btn or sm" data-h="${esc(c.id)}" data-v="${c.balance}" data-n="${esc(c.name)}">استلام</button>` : ""}</td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">مفيش مناديب</div>'}
+    </div>
+    <div class="card"><h3 style="margin-bottom:10px">مصروف / إيراد</h3><form id="lf" class="grid">
+      <select class="in" name="type"><option value="expense">مصروف</option><option value="income">إيراد</option></select>
+      <input class="in" name="amount" type="number" placeholder="المبلغ" required>
+      <input class="in" name="party" placeholder="الجهة (مثلاً: إيجار، بنزين)">
+      <input class="in" name="note" placeholder="ملاحظة">
+      <button class="btn or">تسجيل</button></form></div>
+  </div>
+  <div class="card" style="margin-top:14px"><h3 style="margin-bottom:10px">مستحقات التجار (شحنات اتسلّمت ولسه ماتسوّتش)</h3>
+    ${a.merchants.filter(m => m.codes.length).length ? `<div class="tw" style="border:0"><table><thead><tr><th>التاجر</th><th>عدد الشحنات</th><th>التحصيل</th><th>مصاريف الشحن</th><th>الصافي للتاجر</th><th></th></tr></thead><tbody>
+    ${a.merchants.filter(m => m.codes.length).map(m => `<tr><td>${esc(m.name)}<br><span class="mono sm-t muted">${esc(m.phone)}</span></td><td class="mono">${m.codes.length}</td><td class="mono">${money(m.cod)}</td><td class="mono">${money(m.fees)}</td><td class="mono" style="color:var(--gr);font-weight:700">${money(m.due)}</td><td><button class="btn gr sm" data-m="${esc(m.id)}" data-v="${m.due}" data-n="${esc(m.name)}">تسوية</button></td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">مفيش مستحقات دلوقتي</div>'}
+  </div>
+  <div class="card" style="margin-top:14px"><h3 style="margin-bottom:10px">دفتر الحركات</h3>
+    ${a.ledger.length ? `<div class="tw" style="border:0"><table><thead><tr><th>التاريخ</th><th>النوع</th><th>الجهة</th><th>المبلغ</th><th>المرجع / ملاحظة</th><th>بواسطة</th></tr></thead><tbody>
+    ${a.ledger.map(l => `<tr><td class="sm-t muted">${dt(l.ts)}</td><td>${TY[l.type] || l.type}</td><td>${esc(l.partyName)}</td><td class="mono" style="color:${["expense", "payout"].includes(l.type) ? "var(--red)" : "var(--gr)"}">${money(l.amount)}</td><td class="sm-t">${esc(String(l.ref).length > 30 ? String(l.ref).split(",").length + " شحنة" : l.ref)} ${esc(l.note)}</td><td class="sm-t muted">${esc(l.by)}</td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">لسه مفيش حركات</div>'}
+  </div>`;
+  $("#lf").onsubmit = async e => { e.preventDefault(); await run(() => api("addLedger", Object.fromEntries(new FormData(e.target))), "اتسجّل"); VIEWS.acc(); };
+  $$("[data-h]").forEach(b => b.onclick = () => {
+    const box = modal(`<h2>استلام عهدة من ${esc(b.dataset.n)}</h2><label class="f" style="margin-top:12px">المبلغ (ج)<input class="in mono" id="hv" type="number" value="${b.dataset.v}"></label><div class="row" style="margin-top:14px"><button class="btn or" id="ok">تأكيد الاستلام</button><button class="btn gh" onclick="closeModal()">إلغاء</button></div>`);
+    $("#ok", box).onclick = async () => { await run(() => api("handover", { courierId: b.dataset.h, amount: $("#hv").value }), "اتسجّل الاستلام"); closeModal(); VIEWS.acc(); };
+  });
+  $$("[data-m]").forEach(b => b.onclick = () => {
+    const box = modal(`<h2>تسوية ${esc(b.dataset.n)}</h2><p style="margin-top:10px">هيتسجّل دفع <b class="mono" style="color:var(--gr)">${money(b.dataset.v)} ج</b> للتاجر وكل شحناته المتسلّمة هتتقفل.</p><div class="row" style="margin-top:14px"><button class="btn gr" id="ok">تأكيد التسوية</button><button class="btn gh" onclick="closeModal()">إلغاء</button></div>`);
+    $("#ok", box).onclick = async () => { await run(() => api("settleMerchant", { merchantId: b.dataset.m }), "اتسوّى"); closeModal(); VIEWS.acc(); };
+  });
+};
+
+VIEWS.reports = async (q) => {
+  q = q || { from: new Date(Date.now() - 29 * 864e5).toISOString().slice(0, 10), to: today() };
+  const r = await api("report", q);
+  const maxG = Math.max(1, ...Object.values(r.byGov));
+  $("#main").innerHTML = head("التقارير", `<button class="btn gh" id="csv">⬇ تصدير Excel (CSV)</button>`) + `
+  <form class="card row" id="rf" style="margin-bottom:14px"><label class="f">من<input class="in" type="date" name="from" value="${q.from}"></label><label class="f">لحد<input class="in" type="date" name="to" value="${q.to}"></label><button class="btn or" style="align-self:end">عرض</button></form>
+  <div class="kpis">
+    <div class="kpi o"><span>عدد الشحنات</span><b>${r.count}</b></div>
+    <div class="kpi g"><span>اتسلّمت</span><b>${r.byStatus.delivered || 0}</b></div>
+    <div class="kpi r"><span>مرتجع</span><b>${(r.byStatus.returned || 0) + (r.byStatus.returning || 0)}</b></div>
+    <div class="kpi"><span>نسبة التسليم</span><b>${r.count ? Math.round((r.byStatus.delivered || 0) / r.count * 100) : 0}%</b></div>
+    <div class="kpi"><span>التحصيل (ج)</span><b>${money(r.cod)}</b></div>
+    <div class="kpi g"><span>إيراد الشحن (ج)</span><b>${money(r.fees)}</b></div>
+    <div class="kpi r"><span>المصاريف (ج)</span><b>${money(r.expense)}</b></div>
+    <div class="kpi ${r.net >= 0 ? "g" : "r"}"><span>الصافي (ج)</span><b>${money(r.net)}</b></div>
+  </div>
+  <div class="cols2">
+    <div class="card"><h3 style="margin-bottom:12px">حسب المحافظة</h3>${Object.entries(r.byGov).sort((a, b) => b[1] - a[1]).map(([g, n]) => `<div style="margin-bottom:8px"><div class="row" style="justify-content:space-between"><span>${esc(g)}</span><span class="mono">${n}</span></div><div style="height:6px;border-radius:6px;background:rgba(244,239,230,.08)"><div style="height:100%;width:${n / maxG * 100}%;border-radius:6px;background:var(--or)"></div></div></div>`).join("") || '<div class="empty">—</div>'}</div>
+    <div class="card"><h3 style="margin-bottom:12px">أداء المناديب</h3>${r.couriers.length ? `<table style="min-width:0"><thead><tr><th>المندوب</th><th>استلم</th><th>سلّم</th><th>النسبة</th></tr></thead><tbody>${r.couriers.map(c => `<tr><td>${esc(c.name)}</td><td class="mono">${c.total}</td><td class="mono">${c.delivered}</td><td class="mono">${Math.round(c.delivered / c.total * 100)}%</td></tr>`).join("")}</tbody></table>` : '<div class="empty">—</div>'}</div>
+  </div>`;
+  $("#rf").onsubmit = e => { e.preventDefault(); VIEWS.reports(Object.fromEntries(new FormData(e.target))); };
+  $("#csv").onclick = () => {
+    const cols = ["code", "created", "merchantName", "receiverName", "receiverPhone", "governorate", "city", "address", "cod", "fee", "status", "courierName", "deliveredAt"];
+    const names = ["الكود", "التاريخ", "التاجر", "المستلم", "التليفون", "المحافظة", "المنطقة", "العنوان", "التحصيل", "الشحن", "الحالة", "المندوب", "تاريخ التسليم"];
+    const csv = "﻿" + [names, ...r.rows.map(s => cols.map(c => c === "status" ? ST[s.status] : s[c]))].map(row => row.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+    const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" })); a.download = `wassaly-report-${q.from}-${q.to}.csv`; a.click();
+  };
+};
+
+VIEWS.settings = async () => {
+  const isAdmin = ME.role === "admin";
+  const [users, rates] = isAdmin ? await Promise.all([api("listUsers"), api("rates")]) : [[], []];
+  $("#main").innerHTML = head("الإعدادات") + `
+  <div class="cols2">
+    ${isAdmin ? `<div class="card"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h3>الموظفين</h3><button class="btn or sm" id="au">+ موظف</button></div>
+      <table style="min-width:0"><thead><tr><th>الاسم</th><th>المستخدم</th><th>الدور</th><th>الحالة</th><th></th></tr></thead><tbody>
+      ${users.map((u, i) => `<tr><td>${esc(u.name)}</td><td class="mono">${esc(u.username)}</td><td>${ROLE_NAME[u.role]}</td><td>${u.active ? '<span class="pill s-delivered">شغّال</span>' : '<span class="pill s-cancelled">موقوف</span>'}</td><td><button class="btn gh sm" data-u="${i}">تعديل</button></td></tr>`).join("")}</tbody></table></div>` : ""}
+    <div class="card"><h3 style="margin-bottom:10px">تغيير الباسورد بتاعي</h3><form id="pf" class="grid">
+      <input class="in" type="password" name="old" placeholder="الباسورد الحالي" required>
+      <input class="in" type="password" name="password" placeholder="الباسورد الجديد (6 حروف على الأقل)" required>
+      <button class="btn or">تغيير</button></form></div>
+  </div>
+  ${isAdmin ? `<div class="card" style="margin-top:14px"><div class="row" style="justify-content:space-between;margin-bottom:10px"><h3>أسعار الشحن حسب المحافظة</h3><button class="btn or sm" id="sr">حفظ الأسعار</button></div>
+    <div class="f3" id="rt">${GOVS.map(g => { const r = rates.find(x => x.governorate === g) || {}; return `<div class="row" style="border:1px solid var(--line);border-radius:12px;padding:8px 10px"><span style="flex:1">${g}</span><input class="in mono" style="width:80px" data-g="${g}" data-k="fee" type="number" value="${esc(r.fee ?? "")}" title="السعر"><input class="in mono" style="width:56px" data-g="${g}" data-k="days" type="number" value="${esc(r.days ?? "")}" title="أيام"></div>`; }).join("")}</div>
+    <p class="muted sm-t" style="margin-top:8px">الخانة الأولى السعر بالجنيه، والتانية عدد أيام التوصيل.</p></div>` : ""}`;
+  $("#pf").onsubmit = async e => { e.preventDefault(); await run(() => api("changePassword", Object.fromEntries(new FormData(e.target))), "اتغير الباسورد"); e.target.reset(); };
+  if (!isAdmin) return;
+  const userForm = u => {
+    const box = modal(`<h2>${u.id ? "تعديل موظف" : "موظف جديد"}</h2><form id="uf" class="grid" style="margin-top:14px">
+      <label class="f">الاسم<input class="in" name="name" value="${esc(u.name || "")}" required></label>
+      <label class="f">اسم المستخدم (للدخول)<input class="in mono" name="username" value="${esc(u.username || "")}" ${u.id ? "disabled" : "required"}></label>
+      <label class="f">الدور<select class="in" name="role">${Object.entries(ROLE_NAME).map(([k, v]) => `<option value="${k}" ${u.role === k ? "selected" : ""}>${v}</option>`).join("")}</select></label>
+      <label class="f">التليفون<input class="in" name="phone" value="${esc(u.phone || "")}"></label>
+      <label class="f">${u.id ? "باسورد جديد (سيبه فاضي لو مش هتغيره)" : "الباسورد"}<input class="in" name="password" type="password" ${u.id ? "" : "required"}></label>
+      ${u.id ? `<label class="row"><input type="checkbox" name="active" ${u.active ? "checked" : ""}> الحساب شغّال</label>` : ""}
+      <div class="row"><button class="btn or">حفظ</button><button type="button" class="btn gh" onclick="closeModal()">إلغاء</button></div></form>`);
+    $("#uf", box).onsubmit = async e => { e.preventDefault(); const d = Object.fromEntries(new FormData(e.target)); d.id = u.id || ""; if (u.id) d.active = !!e.target.active.checked;
+      await run(() => api("saveUser", { data: d }), "اتحفظ"); closeModal(); VIEWS.settings(); };
+  };
+  $("#au").onclick = () => userForm({ role: "courier" });
+  $$("[data-u]").forEach(b => b.onclick = () => userForm(users[b.dataset.u]));
+  $("#sr").onclick = async () => {
+    const rs = GOVS.map(g => ({ governorate: g, fee: $(`[data-g="${g}"][data-k=fee]`).value, days: $(`[data-g="${g}"][data-k=days]`).value }));
+    await run(() => api("saveRates", { rates: rs }), "اتحفظت الأسعار");
+  };
+};
+
+/* ============ طباعة البوليصة ============ */
+function printLabels(list) {
+  $("#print").innerHTML = list.map((s, i) => `<div class="lbl">
+    <div class="hd"><b>وصّلي.</b><span>${new Date(s.created || Date.now()).toLocaleDateString("ar-EG")}</span></div>
+    <svg id="bc${i}"></svg>
+    <div><small>المستلم</small><div class="big">${esc(s.receiverName)}</div><div style="font-family:var(--m);direction:ltr;text-align:right">${esc(s.receiverPhone)}</div></div>
+    <div><small>العنوان</small><div class="big">${esc(s.governorate)} - ${esc(s.city)}</div><div>${esc(s.address)}</div></div>
+    <div style="display:flex;justify-content:space-between;gap:3mm"><div><small>التاجر</small><div>${esc(s.merchantName || "—")}</div></div><div><small>القطع</small><div>${esc(s.pieces)}</div></div><div><small>المحتوى</small><div>${esc(s.content || "—")}</div></div></div>
+    <div><small>المطلوب تحصيله</small><div class="cod">${money(s.cod)} ج.م</div></div>
+    ${s.notes ? `<div><small>ملاحظات</small><div>${esc(s.notes)}</div></div>` : ""}
+    <small>تتبّع شحنتك بالكود: ${esc(s.code)}</small>
+  </div>`).join("");
+  list.forEach((s, i) => { try { JsBarcode("#bc" + i, s.code, { format: "CODE128", displayValue: true, fontSize: 16, height: 60, margin: 0 }); } catch (e) { $("#bc" + i).outerHTML = `<div style="font:700 20pt var(--m);text-align:center">${esc(s.code)}</div>`; } });
+  setTimeout(() => window.print(), 300);
+}
+
+/* ============ تشغيل ============ */
+$("#loginSub").textContent = APP_MODE === "delivery" ? "صفحة المناديب — سجّل دخولك" : "الإدارة والمحاسبة — سجّل دخولك";
+document.title = APP_MODE === "delivery" ? "وصّلي | الدليفري" : "وصّلي | الإدارة والمحاسبة";
+async function boot2() { RATES = await api("rates").catch(() => []); shell(); }
+(async () => {
+  if (!TOKEN) return showLogin();
+  try { ME = await api("me"); await boot2(); } catch (e) { showLogin(); }
+})();
+</script>
+</body>
+</html>

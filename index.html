@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>وصّلي | شحن من باب لباب</title>
+<meta name="description" content="وصّلي — شحن سريع وآمن لكل محافظات مصر.">
+<meta name="theme-color" content="#08142f">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;600;800;900&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#050d22;--navy:#08142f;--navy2:#0f1f45;--navy3:#162a5c;
+  --cream:#f4efe6;--muted:#8f9bbd;--line:rgba(244,239,230,.1);
+  --or:#ff6a13;--or2:#ff9a4d;--gr:#19c37d;--red:#ff4b4b;
+  --h:'Alexandria',sans-serif;--b:'IBM Plex Sans Arabic',sans-serif;--m:'Space Grotesk',monospace;
+  --e:cubic-bezier(.22,.9,.24,1);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{font:400 16px/1.75 var(--b);color:var(--cream);background:var(--navy);overflow-x:clip;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}svg{display:block}
+.w{width:min(1160px,100% - 40px);margin-inline:auto}
+h1,h2,h3{font-family:var(--h);line-height:1.15;font-weight:800}
+::selection{background:var(--or);color:#fff}
+
+/* خلفية */
+.bg{position:fixed;inset:0;z-index:-2;background:radial-gradient(1000px 700px at 90% -10%,#1b2f6b 0,transparent 60%),radial-gradient(800px 600px at 0% 100%,#0e2a4a 0,transparent 60%),var(--navy)}
+.bg::after{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:72px 72px;opacity:.35;mask-image:radial-gradient(ellipse at 50% 0%,#000 20%,transparent 70%)}
+.spot{position:fixed;z-index:-1;width:600px;height:600px;border-radius:50%;pointer-events:none;background:radial-gradient(circle,rgba(255,106,19,.13),transparent 60%);transform:translate(-50%,-50%);left:70%;top:20%;transition:left .6s var(--e),top .6s var(--e)}
+
+/* هيدر */
+.top{position:fixed;top:14px;inset-inline:0;z-index:50}
+.bar{display:flex;align-items:center;gap:22px;height:62px;padding:0 10px 0 18px;border-radius:18px;background:rgba(8,20,47,.55);border:1px solid var(--line);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:background .4s}
+.top.s .bar{background:rgba(5,13,34,.85)}
+.logo{display:flex;align-items:center;gap:10px;font:900 24px var(--h)}
+.logo i{width:34px;height:34px;border-radius:10px;background:var(--or);display:grid;place-items:center;box-shadow:0 8px 20px rgba(255,106,19,.45)}
+.logo i svg{width:20px;height:20px}
+.logo em{font-style:normal;color:var(--or)}
+.nav{display:flex;gap:6px;font-size:14px}
+.nav a{padding:8px 14px;border-radius:10px;color:var(--muted);transition:.3s}
+.nav a:hover{color:var(--cream);background:rgba(244,239,230,.06)}
+.st{margin-inline-start:auto;display:flex;align-items:center;gap:9px;padding:8px 16px;border-radius:12px;font:600 13px var(--b);border:1px solid;transition:all .5s var(--e)}
+.st b{width:9px;height:9px;border-radius:50%;background:currentColor;box-shadow:0 0 12px currentColor;position:relative}
+.st b::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid currentColor;animation:ping 1.5s ease-out infinite}
+@keyframes ping{to{transform:scale(2.6);opacity:0}}
+.st span{color:var(--cream)}
+.st.on{color:var(--gr);border-color:rgba(25,195,125,.5);background:rgba(25,195,125,.12);box-shadow:0 0 26px rgba(25,195,125,.35)}
+.st.off{color:var(--red);border-color:rgba(255,75,75,.5);background:rgba(255,75,75,.12);box-shadow:0 0 26px rgba(255,75,75,.35)}
+.st.pop{animation:pop .5s var(--e)}@keyframes pop{40%{transform:scale(1.08)}}
+
+/* أزرار */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:14px 26px;border-radius:14px;font:600 15px var(--b);border:0;cursor:pointer;position:relative;overflow:hidden;transition:transform .35s var(--e),box-shadow .35s}
+.btn svg{width:18px;height:18px}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);transform:translateX(120%);transition:transform .8s}
+.btn:hover::after{transform:translateX(-120%)}
+.or{background:var(--or);color:#fff;box-shadow:0 12px 30px rgba(255,106,19,.35)}
+.or:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,106,19,.5)}
+.gh{color:var(--cream);border:1px solid var(--line);background:rgba(244,239,230,.04)}
+.gh:hover{border-color:rgba(244,239,230,.35)}
+.gn{background:var(--gr);color:#04220f;box-shadow:0 12px 30px rgba(25,195,125,.35)}
+.gn svg{fill:currentColor}.gn:hover{transform:translateY(-3px)}
+
+/* هيرو */
+.hero{min-height:100vh;display:flex;align-items:center;padding:120px 0 60px}
+.hero .w>*{min-width:0}
+.hero .w{display:grid;grid-template-columns:1fr 470px;gap:60px;align-items:center}
+.tag{display:inline-flex;align-items:center;gap:10px;padding:6px 14px 6px 6px;border-radius:999px;background:rgba(244,239,230,.05);border:1px solid var(--line);font-size:13px;color:var(--muted);margin-bottom:24px}
+.tag em{font-style:normal;padding:3px 10px;border-radius:999px;background:var(--gr);color:#04220f;font-weight:600}
+h1{font-size:clamp(38px,5.4vw,68px);letter-spacing:-.5px;margin-bottom:22px}
+h1 .ln{display:block;overflow:hidden;padding-bottom:6px}
+h1 .ln>span{display:inline-block;transform:translateY(110%);animation:up 1s var(--e) forwards}
+h1 .ln:nth-child(2)>span{animation-delay:.12s}h1 .ln:nth-child(3)>span{animation-delay:.24s}
+@keyframes up{to{transform:none}}
+h1 .o{color:var(--or)}
+h1 .out{color:transparent;-webkit-text-stroke:1.5px var(--cream)}
+h1 .sw{display:inline-block;color:var(--gr);transition:opacity .3s,transform .3s var(--e)}
+h1 .sw.x{opacity:0;transform:translateY(14px)}
+.lead{color:var(--muted);font-size:17px;max-width:460px;margin-bottom:32px}
+.ctas{display:flex;gap:12px;flex-wrap:wrap}
+.nums{display:flex;gap:0;margin-top:44px;border:1px solid var(--line);border-radius:18px;width:max-content;max-width:100%;overflow:hidden;background:rgba(244,239,230,.03)}
+.nums div{padding:14px 26px}
+.nums div+div{border-inline-start:1px solid var(--line)}
+.nums b{display:block;font:700 26px var(--m);direction:ltr;text-align:right}
+.nums span{font-size:12px;color:var(--muted)}
+
+/* البوليصة */
+.stage{position:relative;perspective:1200px;animation:drop 1.2s .3s var(--e) both}
+@keyframes drop{from{opacity:0;transform:translateY(-60px) rotate(6deg)}}
+.wb{position:relative;background:var(--cream);color:var(--ink);border-radius:22px;padding:26px;transform:rotate(-2.5deg);box-shadow:0 60px 90px -30px rgba(0,0,0,.7),0 0 0 1px rgba(0,0,0,.05);transition:transform .25s ease-out;transform-style:preserve-3d}
+.wb::before,.wb::after{content:"";position:absolute;top:166px;width:28px;height:28px;border-radius:50%;background:var(--navy)}
+.wb::before{right:-14px}.wb::after{left:-14px}
+.wbh{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.wbh .lg{font:900 20px var(--h)}.wbh .lg em{font-style:normal;color:var(--or)}
+.id{font:700 13px var(--m);letter-spacing:1.5px;direction:ltr;background:var(--ink);color:var(--cream);padding:5px 10px;border-radius:8px}
+.rt{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:end}
+.rt small{display:block;font:600 10px var(--m);letter-spacing:2px;color:#8a8fa5;direction:ltr;text-align:right}
+.rt b{font:800 26px var(--h);display:block}
+.rt .to,.rt .to small{text-align:left}
+.ln2{width:120px;height:28px;position:relative;margin-bottom:6px}
+.ln2::before{content:"";position:absolute;top:50%;inset-inline:0;border-top:2px dashed #cdc5b6}
+.ln2 i{position:absolute;top:50%;right:0;width:28px;height:28px;margin-top:-14px;border-radius:50%;background:var(--or);display:grid;place-items:center;box-shadow:0 6px 14px rgba(255,106,19,.45);transition:right .9s var(--e)}
+.ln2 i svg{width:16px;height:16px}
+.cut{margin:24px -26px 20px;border-top:2px dashed #d8d0c1}
+.sp{display:grid;gap:12px}
+.s{display:flex;align-items:center;gap:12px;font:500 14px var(--b);color:#a2a6b8;transition:color .4s}
+.s i{width:22px;height:22px;border-radius:50%;border:2px solid #d8d0c1;display:grid;place-items:center;flex:none;transition:.4s var(--e)}
+.s i::after{content:"";width:8px;height:8px;border-radius:50%;transition:.3s}
+.s time{margin-inline-start:auto;font:500 12px var(--m);direction:ltr;opacity:0;transition:.4s}
+.s.d{color:var(--ink)}.s.d i{border-color:var(--gr);background:var(--gr)}.s.d i::after{background:#fff}.s.d time{opacity:.5}
+.s.n{color:var(--ink);font-weight:600}.s.n i{border-color:var(--or);box-shadow:0 0 0 5px rgba(255,106,19,.18)}.s.n i::after{background:var(--or)}
+.wbf{display:flex;align-items:flex-end;justify-content:space-between;margin-top:22px}
+.bc{height:42px;display:flex;gap:2px}.bc span{background:var(--ink);border-radius:1px}
+.cod{font:700 12px var(--m);direction:ltr;color:#8a8fa5}
+.stamp{position:absolute;left:26px;bottom:74px;width:110px;height:110px;border-radius:50%;border:3px solid var(--gr);color:var(--gr);display:grid;place-items:center;text-align:center;font:800 15px/1.3 var(--h);transform:rotate(-18deg) scale(2.2);opacity:0;transition:transform .4s cubic-bezier(.3,1.6,.5,1),opacity .15s;pointer-events:none}
+.stamp::before{content:"";position:absolute;inset:6px;border-radius:50%;border:1.5px dashed currentColor}
+.stamp.in{transform:rotate(-18deg) scale(1);opacity:.92}
+.fc{position:absolute;display:flex;align-items:center;gap:10px;padding:11px 15px;border-radius:14px;background:rgba(15,31,69,.85);backdrop-filter:blur(10px);border:1px solid var(--line);font-size:13px;box-shadow:0 20px 40px rgba(0,0,0,.35);animation:fl 5s ease-in-out infinite}
+.fc i{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font:700 14px var(--m);font-style:normal;color:#fff}
+.fc1{top:-26px;left:-30px}.fc1 i{background:var(--or)}
+.fc2{bottom:-24px;right:-26px;animation-delay:-2.5s}.fc2 i{background:var(--gr)}
+@keyframes fl{50%{transform:translateY(-10px)}}
+
+/* شريط */
+.tapew{overflow:hidden;padding:24px 0}
+.tape{transform:rotate(-2deg);margin:0 -30px;background:var(--or);padding:16px 0;overflow:hidden;box-shadow:0 20px 50px rgba(255,106,19,.25)}
+.tape div{display:flex;width:max-content;animation:tp 26s linear infinite}
+.tape span{display:flex;align-items:center;gap:28px;padding-inline-end:28px;font:800 22px var(--h);color:#fff;white-space:nowrap}
+.tape span::after{content:"✦";color:var(--navy);font-size:18px}
+@keyframes tp{to{transform:translateX(50%)}}
+
+/* سكاشن */
+.blk{padding:110px 0}
+.hd{display:flex;justify-content:space-between;align-items:flex-end;gap:30px;margin-bottom:44px}
+.hd h2{font-size:clamp(28px,3.6vw,44px)}
+.hd h2 em{font-style:normal;color:var(--or)}
+.hd p{color:var(--muted);max-width:330px;font-size:15px}
+.k{display:block;font:500 12px var(--m);letter-spacing:3px;color:var(--or);margin-bottom:10px;direction:ltr;text-align:right}
+
+.trk{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:18px 22px;border-radius:22px;background:var(--navy2);border:1px solid var(--line)}
+.trk input{flex:1;min-width:200px;background:rgba(244,239,230,.05);border:1px solid var(--line);border-radius:14px;padding:13px 16px;font:700 17px var(--m);letter-spacing:1.5px;color:var(--cream);direction:ltr;text-align:center;outline:none}
+.trk input:focus{border-color:var(--or)}
+/* رحلة الشحنة بالسكرول */
+.trip{position:relative;border-radius:28px;background:linear-gradient(180deg,var(--navy2),rgba(15,31,69,.4));border:1px solid var(--line);padding:46px 40px 40px;overflow:hidden}
+.road{position:relative;height:90px;margin-bottom:26px}
+.road svg{width:100%;height:100%;overflow:visible}
+.road .bgp{fill:none;stroke:rgba(244,239,230,.08);stroke-width:14;stroke-linecap:round}
+.road .dsh{fill:none;stroke:rgba(244,239,230,.35);stroke-width:2;stroke-dasharray:8 12}
+.road .prog{fill:none;stroke:url(#gp);stroke-width:5;stroke-linecap:round}
+.road .truck{position:absolute;top:0;left:0;width:74px;height:45px;overflow:visible;margin:-24px 0 0 -37px;filter:drop-shadow(0 8px 12px rgba(0,0,0,.5));will-change:transform}
+.cps{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.cp{padding:20px;border-radius:18px;background:rgba(244,239,230,.03);border:1px solid var(--line);transition:.5s var(--e)}
+.cp .n{font:700 13px var(--m);color:var(--muted);direction:ltr;text-align:right;display:block;margin-bottom:8px;transition:.5s}
+.cp h3{font-size:18px;margin-bottom:4px}
+.cp p{font-size:13px;color:var(--muted)}
+.cp.on{border-color:rgba(255,106,19,.5);background:rgba(255,106,19,.08);transform:translateY(-4px)}
+.cp.on .n{color:var(--or)}
+.cp:last-child.on{border-color:rgba(25,195,125,.5);background:rgba(25,195,125,.08)}
+.cp:last-child.on .n{color:var(--gr)}
+
+/* خدمات */
+.bento{display:grid;grid-template-columns:1.25fr 1fr 1fr;grid-auto-rows:200px;gap:14px}
+.t{position:relative;border-radius:22px;padding:26px;background:var(--navy2);border:1px solid var(--line);overflow:hidden;transition:transform .4s var(--e),border-color .4s}
+.t::before{content:"";position:absolute;inset:0;background:radial-gradient(320px circle at var(--x,50%) var(--y,50%),rgba(255,106,19,.15),transparent 50%);opacity:0;transition:.4s}
+.t:hover{border-color:rgba(255,106,19,.4)}.t:hover::before{opacity:1}
+.t h3{font-size:20px;margin-bottom:6px;position:relative}
+.t p{color:var(--muted);font-size:14px;max-width:270px;position:relative}
+.ic{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;margin-bottom:18px;background:rgba(255,106,19,.12);color:var(--or);position:relative}
+.ic svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.t.g .ic{background:rgba(25,195,125,.12);color:var(--gr)}
+.t.big{grid-row:span 2;background:linear-gradient(155deg,var(--or),#e04f00);border:0;display:flex;flex-direction:column}
+.t.big::before{background:radial-gradient(320px circle at var(--x,50%) var(--y,50%),rgba(255,255,255,.18),transparent 50%)}
+.t.big p{color:rgba(255,255,255,.88)}
+.t.big .ic{background:rgba(255,255,255,.2);color:#fff}
+.t.big .hg{margin-top:auto;font:700 110px/.9 var(--m);direction:ltr;text-align:right;letter-spacing:-4px;position:relative}
+.t.big .hg small{font:700 22px var(--h);letter-spacing:0;margin-inline-start:8px}
+.t.big .rings{position:absolute;left:-80px;bottom:-80px;width:280px;height:280px;border-radius:50%;border:1px solid rgba(255,255,255,.25);box-shadow:0 0 0 40px rgba(255,255,255,.05),0 0 0 80px rgba(255,255,255,.03);animation:spin 20s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.t.wide{grid-column:span 2;display:flex;align-items:center;gap:30px}
+.t.wide .m{flex:1;position:relative}
+.meter{height:10px;border-radius:9px;background:rgba(244,239,230,.08);overflow:hidden}
+.meter i{display:block;height:100%;width:0;border-radius:9px;background:linear-gradient(90deg,var(--gr),var(--or));transition:width 2.2s var(--e)}
+.t.wide.in .meter i{width:98%}
+.meter+div{display:flex;justify-content:space-between;font:500 12px var(--m);color:var(--muted);margin-top:8px;direction:ltr}
+
+/* اشترك */
+.join{display:grid;grid-template-columns:1fr 1.1fr;gap:44px;align-items:center;padding:50px;border-radius:30px;background:var(--cream);color:var(--ink);position:relative;overflow:hidden}
+.join .wm{position:absolute;left:-20px;bottom:-70px;font:900 220px/1 var(--h);color:rgba(8,20,47,.05);pointer-events:none}
+.join h2{font-size:clamp(28px,3.2vw,40px);margin-bottom:12px}
+.join h2 em{font-style:normal;color:var(--or)}
+.join p{color:#5a6280}
+.chk{list-style:none;margin-top:20px;display:grid;gap:10px}
+.chk li{display:flex;gap:10px;align-items:center;font-weight:600;font-size:15px}
+.chk li::before{content:"✓";width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;color:#fff;background:var(--gr);flex:none}
+.fm{display:grid;grid-template-columns:1fr 1fr;gap:12px;position:relative}
+.fm input,.fm select{width:100%;font:400 15px var(--b);color:var(--ink);background:#fff;border:1.5px solid #e3dccf;border-radius:14px;padding:14px 16px;outline:none;transition:.25s}
+.fm input:focus,.fm select:focus{border-color:var(--or);box-shadow:0 0 0 4px rgba(255,106,19,.15)}
+.fm input.err{border-color:var(--red)}
+.fm .btn{grid-column:1/-1;justify-content:center;padding:16px}
+.fm small{grid-column:1/-1;text-align:center;color:var(--red);min-height:18px;font-size:13px}
+
+/* مكتبنا */
+.off{display:grid;grid-template-columns:1.5fr 1fr;gap:14px}
+.map{border-radius:22px;overflow:hidden;border:1px solid var(--line);min-height:340px;background:var(--navy2)}
+.map iframe{width:100%;height:100%;min-height:340px;border:0;filter:invert(.92) hue-rotate(180deg) saturate(.55)}
+.inf{border-radius:22px;padding:28px;background:var(--navy2);border:1px solid var(--line);display:flex;flex-direction:column;gap:20px}
+.r{display:flex;gap:14px}
+.r svg{width:20px;height:20px;fill:var(--or);flex:none;margin-top:4px}
+.r b{display:block;font:600 13px var(--b);color:var(--muted)}
+.inf .btn{margin-top:auto;justify-content:center}
+
+/* فوتر */
+.ft{margin-top:60px;border-top:1px solid var(--line);padding:50px 0 30px;overflow:hidden}
+.ft .row{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
+.ft p{color:var(--muted);font-size:13px}
+.so{display:flex;gap:10px}
+.so a{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;border:1px solid var(--line);transition:.35s var(--e)}
+.so a svg{width:19px;height:19px;fill:var(--cream)}
+.so a:hover{transform:translateY(-4px) rotate(-6deg)}
+.so .fb:hover{background:#1877f2;border-color:#1877f2}
+.so .ig:hover{background:linear-gradient(45deg,#f9a825,#e1306c,#833ab4);border-color:transparent}
+.so .tt:hover{background:#000;border-color:#000;box-shadow:-2px -2px 0 #25f4ee,2px 2px 0 #fe2c55}
+.giant{font:900 clamp(90px,19vw,250px)/.85 var(--h);text-align:center;color:transparent;-webkit-text-stroke:1px rgba(244,239,230,.14);margin-top:30px;letter-spacing:-2px;user-select:none}
+.giant em{font-style:normal;-webkit-text-stroke:0;color:var(--or)}
+
+.waf{position:fixed;left:18px;bottom:18px;z-index:60;width:56px;height:56px;border-radius:18px;display:grid;place-items:center;background:var(--gr);box-shadow:0 14px 30px rgba(25,195,125,.45);transition:transform .3s var(--e)}
+.waf:hover{transform:scale(1.08) rotate(-8deg)}
+.waf svg{width:28px;height:28px;fill:#04220f}
+
+.rv{opacity:0;transform:translateY(30px);transition:opacity .9s var(--e),transform .9s var(--e)}
+.rv.in{opacity:1;transform:none}
+
+@media(max-width:1000px){
+  .hero .w{grid-template-columns:1fr}.stage{max-width:470px;width:100%;margin:20px auto 0}
+  .bento{grid-template-columns:1fr 1fr}.t.big{grid-column:span 2;grid-row:span 1}.t.big .hg{font-size:72px}
+  .join,.off{grid-template-columns:1fr}.hd{flex-direction:column;align-items:flex-start}
+  .cps{grid-template-columns:1fr 1fr}
+}
+@media(max-width:640px){
+  .nav{display:none}.top{top:8px}.bar{height:56px}
+  .hero{padding-top:100px;min-height:auto}
+  .nums{width:100%}.nums div{flex:1;padding:12px 14px}.spot{display:none}
+  .wb{transform:none}.fc1{left:6px}.fc2{right:6px}
+  .bento{grid-template-columns:1fr;grid-auto-rows:auto}.t.big,.t.wide{grid-column:auto}.t.wide{flex-direction:column;align-items:stretch}
+  .trip{padding:30px 18px}.cps{grid-template-columns:1fr 1fr;gap:10px}.cp{padding:14px}
+  .join{padding:30px 20px}.fm{grid-template-columns:1fr}
+  .blk{padding:80px 0}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}h1 .ln>span{transform:none}}
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="spot" id="spot"></div>
+
+<header class="top" id="top">
+  <div class="w"><div class="bar">
+    <a href="#" class="logo"><i><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-7 4 5 3-4 4 4"/></svg></i>وصّلي<em>.</em></a>
+    <nav class="nav"><a href="track.html" style="color:var(--or)">تتبّع شحنتك</a><a href="#trip">إزاي بنشتغل</a><a href="#services">خدماتنا</a><a href="#join">اشترك</a><a href="#office">مكتبنا</a></nav>
+    <div class="st on" id="st"><b></b><span>مفتوح الآن</span></div>
+  </div></div>
+</header>
+
+<section class="hero">
+  <div class="w">
+    <div>
+      <div class="tag"><em>جديد</em> شحن لكل محافظات مصر</div>
+      <h1>
+        <span class="ln"><span>شحنتك</span></span>
+        <span class="ln"><span class="o">بتوصل</span> <span class="out">أسرع</span></span>
+        <span class="ln"><span class="sw" id="sw">من باب لباب</span></span>
+      </h1>
+      <p class="lead">وصّلي بتستلم من عندك وتسلّم لعميلك في أي محافظة، وتحصّلك فلوسك. وأنت متابع كل خطوة.</p>
+      <div class="ctas">
+        <a href="#join" class="btn or">اشترك دلوقتي<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M14 6l-6 6 6 6"/></svg></a>
+        <a href="track.html" class="btn gh">تتبّع شحنتك</a>
+      </div>
+      <div class="nums">
+        <div><b data-n="27">0</b><span>محافظة</span></div>
+        <div><b data-n="24" data-s="h">0</b><span>متوسط التوصيل</span></div>
+        <div><b data-n="98" data-s="%">0</b><span>في المعاد</span></div>
+      </div>
+    </div>
+
+    <div class="stage">
+      <div class="wb" id="wb">
+        <div class="wbh"><div class="lg">وصّلي<em>.</em></div><div class="id" id="wid">WS-2840-1937</div></div>
+        <div class="rt">
+          <div><small>FROM</small><b id="fr">القاهرة</b></div>
+          <div class="ln2"><i id="dot"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M14 6l-6 6 6 6"/></svg></i></div>
+          <div class="to"><small>TO</small><b id="to">إسكندرية</b></div>
+        </div>
+        <div class="cut"></div>
+        <div class="sp" id="sp">
+          <div class="s"><i></i>تم استلام الشحنة<time>09:12</time></div>
+          <div class="s"><i></i>في المخزن<time>11:40</time></div>
+          <div class="s"><i></i>خرجت للتوصيل<time>14:05</time></div>
+          <div class="s"><i></i>اتسلّمت للعميل<time>16:30</time></div>
+        </div>
+        <div class="wbf"><div class="bc" id="bc"></div><div class="cod">COD · PAID</div></div>
+        <div class="stamp" id="stamp">اتسلّمت<br>✓</div>
+      </div>
+      <div class="fc fc1"><i>₤</i>تحصيل عند الاستلام</div>
+      <div class="fc fc2"><i>●</i>تتبّع لحظي</div>
+    </div>
+  </div>
+</section>
+
+<div class="tapew"><div class="tape"><div>
+  <span>شحن من باب لباب</span><span>تحصيل عند الاستلام</span><span>تتبّع لحظي</span><span>تغليف آمن</span><span>كل المحافظات</span><span>مرتجعات سهلة</span>
+  <span>شحن من باب لباب</span><span>تحصيل عند الاستلام</span><span>تتبّع لحظي</span><span>تغليف آمن</span><span>كل المحافظات</span><span>مرتجعات سهلة</span>
+</div></div></div>
+
+<!-- تتبّع سريع -->
+<section class="w" style="margin-top:40px"><form class="trk rv" id="trk" onsubmit="event.preventDefault();location.href='track.html#'+this.c.value.trim().toUpperCase()">
+  <div><span class="k">TRACK</span><b style="font:800 22px var(--h)">تابع شحنتك دلوقتي</b></div>
+  <input name="c" placeholder="اكتب كود الشحنة WS…" required autocomplete="off"><button class="btn or">تتبّع</button></form></section>
+
+<!-- رحلة الشحنة: العربية بتمشي مع السكرول -->
+<section class="blk" id="trip">
+  <div class="w">
+    <div class="hd rv"><div><span class="k">01 — THE TRIP</span><h2>رحلة شحنتك <em>في ٤ محطات</em></h2></div><p>انزل بالسكرول وشوف العربية وهي بتوصّل.</p></div>
+    <div class="trip rv" id="tripBox">
+      <div class="road" id="road">
+        <svg viewBox="0 0 1000 90" preserveAspectRatio="none">
+          <defs><linearGradient id="gp" x1="1" x2="0"><stop offset="0" stop-color="#ff6a13"/><stop offset="1" stop-color="#19c37d"/></linearGradient></defs>
+          <path class="bgp" d="M955 60 C 830 12, 690 80, 500 45 S 170 12, 45 50"/>
+          <path class="dsh" d="M955 60 C 830 12, 690 80, 500 45 S 170 12, 45 50"/>
+          <path class="prog" id="prog" d="M955 60 C 830 12, 690 80, 500 45 S 170 12, 45 50"/>
+        </svg>
+        <svg class="truck" id="truck" viewBox="0 0 56 34"><rect x="18" y="2" width="36" height="22" rx="4" fill="#ff6a13"/><path d="M18 8H8L2 16v8h16z" fill="#f4efe6"/><path d="M9 11h7v5H5z" fill="#0f1f45"/><circle cx="12" cy="26" r="5" fill="#050d22" stroke="#f4efe6" stroke-width="2"/><circle cx="44" cy="26" r="5" fill="#050d22" stroke="#f4efe6" stroke-width="2"/><path d="M26 9h20M26 15h14" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".7"/></svg>
+      </div>
+      <div class="cps" id="cps">
+        <div class="cp"><span class="n">01</span><h3>اشترك</h3><p>ابعتلنا بياناتك على واتساب.</p></div>
+        <div class="cp"><span class="n">02</span><h3>نستلم منك</h3><p>المندوب يجيلك لحد عندك.</p></div>
+        <div class="cp"><span class="n">03</span><h3>في الطريق</h3><p>تابع شحنتك لحظة بلحظة.</p></div>
+        <div class="cp"><span class="n">04</span><h3>اتسلّمت</h3><p>ونحوّلك فلوسك بسرعة.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="services" style="padding-top:0">
+  <div class="w">
+    <div class="hd rv"><div><span class="k">02 — SERVICES</span><h2>كل اللي شحنتك <em>محتاجاه</em></h2></div><p>للأفراد والمتاجر الأونلاين والشركات، بنفس الاهتمام.</p></div>
+    <div class="bento">
+      <div class="t big rv"><div class="rings"></div>
+        <div class="ic"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></div>
+        <h3>شحن سريع</h3><p>نفس اليوم جوه المدينة، ومن يوم ليومين لباقي المحافظات.</p>
+        <div class="hg">24<small>ساعة</small></div>
+      </div>
+      <div class="t g rv"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></div><h3>تحصيل عند الاستلام</h3><p>نحصّل من العميل ونحوّلك بسرعة.</p></div>
+      <div class="t rv"><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s7-7.5 7-12a7 7 0 10-14 0c0 4.5 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div><h3>تتبّع لحظي</h3><p>اعرف شحنتك فين في أي وقت.</p></div>
+      <div class="t wide rv"><div><h3>98% بتوصل في معادها</h3><p>تغليف آمن ومناديب مدرّبين.</p></div><div class="m"><div class="meter"><i></i></div><div><span>0%</span><span>100%</span></div></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="join" style="padding-top:0">
+  <div class="w">
+    <div class="join rv">
+      <div class="wm">وصّلي</div>
+      <div>
+        <span class="k">03 — JOIN</span>
+        <h2>ابدأ تشحن <em>النهارده</em></h2>
+        <p>اكتب بياناتك وهيفتحلك واتساب برسالة جاهزة، وفريقنا يرد عليك على طول.</p>
+        <ul class="chk"><li>من غير رسوم اشتراك</li><li>أسعار خاصة للمتاجر الأونلاين</li><li>مسؤول حساب ليك</li></ul>
+      </div>
+      <form class="fm" id="fm" novalidate>
+        <input name="name" placeholder="الاسم">
+        <input name="phone" type="tel" placeholder="رقم الموبايل">
+        <input name="city" placeholder="المحافظة">
+        <select name="type"><option>متجر أونلاين</option><option>شركة</option><option>فرد</option></select>
+        <button class="btn gn" type="submit"><svg viewBox="0 0 24 24"><path d="M20.5 3.5A11 11 0 003.3 17.2L2 22l4.9-1.3A11 11 0 1020.5 3.5zM12 20a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8 1c-.1.2-.3.2-.5.1a6.6 6.6 0 01-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.4.8 3.2.6a2.8 2.8 0 001.8-1.3 2.3 2.3 0 00.2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg>اشترك على واتساب</button>
+        <small id="er"></small>
+      </form>
+    </div>
+  </div>
+</section>
+
+<section class="blk" id="office" style="padding-top:0">
+  <div class="w">
+    <div class="hd rv"><div><span class="k">04 — OFFICE</span><h2>مكتب <em>الشحن</em></h2></div></div>
+    <div class="off rv">
+      <div class="map"><iframe id="map" title="موقع مكتب وصّلي" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+      <div class="inf">
+        <div class="r"><svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7zm0 9.5A2.5 2.5 0 1112 4.5a2.5 2.5 0 010 5z"/></svg><div><b>العنوان</b><span id="ad"></span></div></div>
+        <div class="r"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 10.4l3.2 1.9-.8 1.3L11 13V7h2z"/></svg><div><b>مواعيد العمل</b><span id="hr"></span></div></div>
+        <div class="r"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15 15 0 006.6 6.6l2.2-2.2a1 1 0 011-.2 11.4 11.4 0 003.6.6 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.4 11.4 0 00.6 3.6 1 1 0 01-.3 1z"/></svg><div><b>تليفون</b><span id="tl" dir="ltr"></span></div></div>
+        <a class="btn or" id="mb" target="_blank" rel="noopener">افتح على الخريطة</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="ft">
+  <div class="w">
+    <div class="row">
+      <a href="#" class="logo"><i><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16l5-7 4 5 3-4 4 4"/></svg></i>وصّلي<em>.</em></a>
+      <div class="so">
+        <a class="fb" id="fb" target="_blank" rel="noopener" aria-label="فيسبوك"><svg viewBox="0 0 24 24"><path d="M14 8h3V4h-3a4 4 0 00-4 4v2H7v4h3v8h4v-8h3l1-4h-4V8.5a.5.5 0 01.5-.5z"/></svg></a>
+        <a class="ig" id="ig" target="_blank" rel="noopener" aria-label="إنستجرام"><svg viewBox="0 0 24 24"><path d="M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm0 2a3 3 0 00-3 3v10a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3zm5 3.5a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 2a2.5 2.5 0 100 5 2.5 2.5 0 000-5zM17.5 6a1 1 0 110 2 1 1 0 010-2z"/></svg></a>
+        <a class="tt" id="tt" target="_blank" rel="noopener" aria-label="تيك توك"><svg viewBox="0 0 24 24"><path d="M16.5 2c.3 2.4 1.7 4 4 4.2v3.3a7.4 7.4 0 01-4-1.3v6.4A6.6 6.6 0 119.9 8v3.4a3.3 3.3 0 103.3 3.2V2z"/></svg></a>
+      </div>
+      <p>© <span id="yr"></span> وصّلي — كل الحقوق محفوظة</p>
+    </div>
+    <div class="giant">وصّلي</div>
+  </div>
+</footer>
+
+<a class="waf" id="waf" target="_blank" rel="noopener" aria-label="واتساب"><svg viewBox="0 0 24 24"><path d="M20.5 3.5A11 11 0 003.3 17.2L2 22l4.9-1.3A11 11 0 1020.5 3.5zM12 20a8 8 0 01-4.1-1.1l-.3-.2-2.9.8.8-2.8-.2-.3A8 8 0 1112 20zm4.4-6c-.2-.1-1.4-.7-1.7-.8-.2-.1-.4-.1-.5.1l-.8 1c-.1.2-.3.2-.5.1a6.6 6.6 0 01-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.5-.4h-.5a1 1 0 00-.7.3 3 3 0 00-.9 2.2 5.2 5.2 0 001.1 2.7 11.8 11.8 0 004.5 4c1.7.7 2.4.8 3.2.6a2.8 2.8 0 001.8-1.3 2.3 2.3 0 00.2-1.3c-.1-.1-.3-.2-.5-.3z"/></svg></a>
+
+<script>
+/* ===== الإعدادات: غيّر بياناتك هنا ===== */
+const CONFIG = {
+  whatsapp: "201000000000",            // رقم الواتساب دولي من غير + (مثال 201012345678)
+  phone: "+20 100 000 0000",
+  facebook: "https://facebook.com/",
+  instagram: "https://instagram.com/",
+  tiktok: "https://tiktok.com/",
+  address: "العنوان هيتحط هنا",
+  map: "Cairo, Egypt",                 // اسم المكان أو إحداثيات "30.04,31.23"
+  hoursText: "هتتحدد قريب",
+  demo: true,                          // true = يتبدّل كل 5 ثواني. false = حسب المواعيد تحت
+  schedule: {0:[10,22],1:[10,22],2:[10,22],3:[10,22],4:[10,22],5:null,6:[10,22]} // 0 = الأحد
+};
+
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const wa = t => `https://wa.me/${CONFIG.whatsapp}${t ? "?text=" + encodeURIComponent(t) : ""}`;
+$("#fb").href = CONFIG.facebook; $("#ig").href = CONFIG.instagram; $("#tt").href = CONFIG.tiktok;
+$("#waf").href = wa("أهلاً وصّلي، عايز أستفسر عن الشحن");
+$("#ad").textContent = CONFIG.address; $("#hr").textContent = CONFIG.hoursText; $("#tl").textContent = CONFIG.phone;
+$("#map").src = `https://maps.google.com/maps?q=${encodeURIComponent(CONFIG.map)}&z=15&output=embed`;
+$("#mb").href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(CONFIG.map)}`;
+$("#yr").textContent = new Date().getFullYear();
+
+/* مفتوح / مغلق */
+const ST = $("#st");
+function setOpen(o){ ST.className = "st " + (o ? "on" : "off"); void ST.offsetWidth; ST.classList.add("pop"); ST.querySelector("span").textContent = o ? "مفتوح الآن" : "مغلق الآن"; }
+const openNow = () => { const d = new Date(), s = CONFIG.schedule[d.getDay()], h = d.getHours() + d.getMinutes()/60; return !!s && h >= s[0] && h < s[1]; };
+if (CONFIG.demo) { let o = true; setOpen(o); setInterval(() => setOpen(o = !o), 5000); }
+else { setOpen(openNow()); setInterval(() => setOpen(openNow()), 30000); }
+
+/* كلمة بتتغير */
+const W = ["من باب لباب","لكل المحافظات","في نفس اليوم","وفلوسك معاك"]; let wi = 0;
+setInterval(() => { const e = $("#sw"); e.classList.add("x"); setTimeout(() => { e.textContent = W[wi = (wi+1) % W.length]; e.classList.remove("x"); }, 300); }, 2800);
+
+/* باركود */
+let z = 7; for (let i = 0; i < 48; i++) { const s = document.createElement("span"); z = (z*37+11) % 97; s.style.width = (1 + z%3) + "px"; $("#bc").appendChild(s); }
+
+/* البوليصة الحية */
+const R = [["القاهرة","إسكندرية"],["الجيزة","أسيوط"],["المنصورة","الغردقة"],["طنطا","أسوان"],["الإسماعيلية","سوهاج"]];
+const S = $$("#sp .s"), stamp = $("#stamp"), dot = $("#dot"); let k = 0, r = 0;
+function tick(){
+  if (k === 0){ const [a,b] = R[r++ % R.length]; $("#fr").textContent = a; $("#to").textContent = b;
+    $("#wid").textContent = "WS-" + (1000+Math.random()*8999|0) + "-" + (1000+Math.random()*8999|0); stamp.classList.remove("in"); }
+  S.forEach((s,i) => { s.classList.toggle("d", i < k); s.classList.toggle("n", i === k); });
+  dot.style.right = `calc(${Math.min(k,S.length-1)/(S.length-1)*100}% - ${Math.min(k,S.length-1)/(S.length-1)*28}px)`;
+  if (k === S.length) { S.forEach(s => { s.classList.add("d"); s.classList.remove("n"); }); stamp.classList.add("in"); }
+  k = (k+1) % (S.length+2);
+}
+tick(); setInterval(tick, 1300);
+
+/* حركة مع الماوس */
+const fine = matchMedia("(pointer:fine)").matches, wb = $("#wb"), spot = $("#spot");
+if (fine){
+  addEventListener("mousemove", e => { spot.style.left = e.clientX + "px"; spot.style.top = e.clientY + "px"; }, {passive:true});
+  wb.parentElement.addEventListener("mousemove", e => { const b = wb.getBoundingClientRect(), x = (e.clientX-b.left)/b.width-.5, y = (e.clientY-b.top)/b.height-.5; wb.style.transform = `rotateY(${x*18}deg) rotateX(${-y*14}deg)`; });
+  wb.parentElement.addEventListener("mouseleave", () => wb.style.transform = "");
+  $$(".t").forEach(t => t.addEventListener("mousemove", e => { const b = t.getBoundingClientRect(); t.style.setProperty("--x", e.clientX-b.left+"px"); t.style.setProperty("--y", e.clientY-b.top+"px"); }));
+}
+
+/* هيدر */
+addEventListener("scroll", () => $("#top").classList.toggle("s", scrollY > 20), {passive:true});
+
+/* العربية بتمشي مع السكرول */
+const road = $("#road"), prog = $("#prog"), truck = $("#truck"), cps = $$("#cps .cp"), L = prog.getTotalLength();
+prog.style.strokeDasharray = L; prog.style.strokeDashoffset = L;
+function drive(){
+  const b = $("#tripBox").getBoundingClientRect(), vh = innerHeight;
+  const p = Math.max(0, Math.min(1, (vh*.85 - b.top) / (b.height + vh*.35)));
+  prog.style.strokeDashoffset = L*(1-p);
+  const pt = prog.getPointAtLength(L*p), pt2 = prog.getPointAtLength(Math.min(L, L*p + 2));
+  const sx = road.clientWidth/1000, sy = road.clientHeight/90;
+  const ang = Math.atan2((pt2.y-pt.y)*sy, (pt2.x-pt.x)*sx)*180/Math.PI;
+  truck.style.transform = `translate(${pt.x*sx}px,${pt.y*sy}px) rotate(${ang+180}deg)`;
+  cps.forEach((c,i) => c.classList.toggle("on", p >= i/cps.length + .02));
+}
+addEventListener("scroll", drive, {passive:true}); addEventListener("resize", drive); drive();
+
+/* ظهور + عدّادات */
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (!e.isIntersecting) return; e.target.classList.add("in");
+  e.target.querySelectorAll("[data-n]").forEach(el => { const n = +el.dataset.n, s = el.dataset.s || "+", t0 = performance.now();
+    (function f(t){ const p = Math.min(1,(t-t0)/1500); el.textContent = Math.round(n*(1-Math.pow(1-p,3))) + (p === 1 ? s : ""); if (p < 1) requestAnimationFrame(f); })(t0); });
+  io.unobserve(e.target);
+}), {threshold:.15});
+$$(".rv, .nums").forEach((el,i) => { if (el.classList.contains("rv")) el.style.transitionDelay = (i%3)*.08 + "s"; io.observe(el); });
+
+/* فورم ← واتساب */
+$("#fm").addEventListener("submit", e => {
+  e.preventDefault(); const f = e.target, n = f.name.value.trim(), ph = f.phone.value.trim(), ok = /^[0-9+\s]{8,15}$/.test(ph);
+  f.name.classList.toggle("err", !n); f.phone.classList.toggle("err", !ok);
+  if (!n || !ok) { $("#er").textContent = "اكتب الاسم ورقم موبايل صحيح"; return; }
+  $("#er").textContent = "";
+  window.open(wa(`أهلاً وصّلي، عايز أشترك في خدمة الشحن\nالاسم: ${n}\nالموبايل: ${ph}\nالمحافظة: ${f.city.value.trim() || "-"}\nالنشاط: ${f.type.value}`), "_blank");
+});
+</script>
+</body>
+</html>
